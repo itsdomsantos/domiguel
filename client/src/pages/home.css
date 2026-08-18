@@ -1,0 +1,101 @@
+.hero {
+  padding: 150px 0 80px;
+  position: relative;
+}
+.hero__content { max-width: 780px; }
+.hero__title {
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-weight: 800;
+  margin: 8px 0 22px;
+}
+.hero__sub {
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  color: var(--text-soft);
+  max-width: 620px;
+}
+.hero__actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 34px;
+  flex-wrap: wrap;
+}
+.hero__stats {
+  display: flex;
+  gap: 48px;
+  margin-top: 60px;
+  flex-wrap: wrap;
+}
+.hero__stat { display: flex; flex-direction: column; }
+.hero__stat strong {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+}
+.hero__stat span {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.section__head {
+  max-width: 620px;
+  margin-bottom: 44px;
+}
+.section__head h2 {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  margin-bottom: 12px;
+}
+.section__head p { color: var(--text-soft); }
+.section__head--row {
+  max-width: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.services__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+.service {
+  padding: 28px;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.service:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
+}
+.service__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 16px;
+}
+.service h3 { font-size: 1.2rem; margin-bottom: 8px; }
+.service p { color: var(--text-soft); font-size: 0.93rem; }
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.cta {
+  text-align: center;
+  padding: 72px 24px;
+  border-radius: 28px;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(500px circle at 50% 0%, rgba(124, 92, 255, 0.18), transparent 60%),
+    var(--surface);
+}
+.cta h2 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  margin-bottom: 14px;
+}
+.cta p {
+  color: var(--text-soft);
+  margin-bottom: 28px;
+  font-size: 1.05rem;
+}

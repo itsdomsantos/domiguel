@@ -1,0 +1,22 @@
+# Dependências
+node_modules/
+
+# Build
+client/dist/
+
+# Base de dados e uploads (dados locais)
+server/data/*.db
+server/data/*.db-*
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Ambiente
+.env
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema
+.DS_Store
