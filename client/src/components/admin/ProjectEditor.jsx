@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../../api.js';
+import { supabase, BUCKET } from '../../supabaseClient.js';
 
 const empty = {
   title: '',
@@ -28,7 +29,7 @@ export default function ProjectEditor({ projectId, onSaved, onCancel }) {
   useEffect(() => {
     if (!projectId) return;
     api
-      .get(`/projects/admin/${projectId}`)
+      .get(`/projects/${projectId}`)
       .then((res) => {
         const p = res.data;
         setForm({ ...p, tags: (p.tags || []).join(', ') });
@@ -48,14 +49,17 @@ export default function ProjectEditor({ projectId, onSaved, onCancel }) {
     setUploading(true);
     setError('');
     try {
-      const data = new FormData();
-      data.append('image', file);
-      const res = await api.post('/projects/upload', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setForm((f) => ({ ...f, cover_image: res.data.url }));
+      // 1) Pede um URL de upload assinado à nossa função serverless
+      const { data } = await api.post('/projects/upload-url', { filename: file.name });
+      // 2) Envia a imagem diretamente para o Supabase Storage
+      const { error: upErr } = await supabase.storage
+        .from(BUCKET)
+        .uploadToSignedUrl(data.path, data.token, file);
+      if (upErr) throw upErr;
+      // 3) Guarda o URL público
+      setForm((f) => ({ ...f, cover_image: data.publicUrl }));
     } catch (err) {
-      setError(err.response?.data?.error || 'Erro ao carregar imagem.');
+      setError(err.response?.data?.error || err.message || 'Erro ao carregar imagem.');
     } finally {
       setUploading(false);
     }

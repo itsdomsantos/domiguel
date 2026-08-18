@@ -47,7 +47,7 @@ export default function Admin() {
   }
 
   async function toggleRead(m) {
-    await api.patch(`/messages/${m.id}/read`, { read: !m.read });
+    await api.patch(`/messages/${m.id}`, { read: !m.read });
     load();
   }
 
