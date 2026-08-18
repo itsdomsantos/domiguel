@@ -26,7 +26,7 @@ export default function Navbar() {
     <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`}>
       <div className="container nav__inner">
         <Link to="/" className="nav__logo">
-          <span className="nav__logo-prefix">dom</span>iguel<span>.</span>
+          <span className="nav__logo-prefix">do</span>miguel<span>.</span>
         </Link>
 
         <nav className={`nav__links ${open ? 'nav__links--open' : ''}`}>
