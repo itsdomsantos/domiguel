@@ -26,6 +26,10 @@
 }
 .nav__logo span { color: var(--brand-2); }
 
+.nav__logo-prefix {
+  color: var(--brand-2);
+}
+
 .nav__links {
   display: flex;
   align-items: center;

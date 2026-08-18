@@ -29,11 +29,11 @@ const services = [
   },
 ];
 
-const stats = [
+/*const stats = [
   { value: '30+', label: 'Projetos entregues' },
   { value: '100%', label: 'Clientes satisfeitos' },
   { value: '5★', label: 'Avaliação média' },
-];
+];*/
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);
@@ -73,14 +73,14 @@ export default function Home() {
                 Iniciar um projeto
               </Link>
             </div>
-            <div className="hero__stats">
+            {/*<div className="hero__stats">
               {stats.map((s) => (
                 <div key={s.label} className="hero__stat">
                   <strong>{s.value}</strong>
                   <span>{s.label}</span>
                 </div>
               ))}
-            </div>
+            </div>*/}
           </motion.div>
         </div>
       </section>
