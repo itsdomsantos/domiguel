@@ -71,6 +71,13 @@ export default function Contact() {
                   <span>Trabalhamos remotamente, para todo o mundo</span>
                 </div>
               </li>
+              <li>
+                <span>🌐</span>
+                <div>
+                  <strong>Linkdin</strong>
+                  <a href="https://www.linkedin.com/in/dawnofdom/">Domingos Santos (dev)</a>
+                </div>
+              </li>
             </ul>
           </motion.div>
 
