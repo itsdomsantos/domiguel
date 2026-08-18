@@ -23,13 +23,13 @@ Website de portfólio moderno, limpo e fluido para mostrar criações, expor tra
 | --------- | ------------------------------------------------- |
 | Frontend  | React 18, Vite, React Router, Framer Motion, Axios |
 | Backend   | Node.js, Express                                  |
-| Base de dados | SQLite (better-sqlite3)                        |
+| Base de dados | SQLite (`node:sqlite`, embutido no Node — sem compilação) |
 | Auth      | JWT + bcrypt                                       |
 | Uploads   | Multer                                             |
 
 ## 🚀 Como correr localmente
 
-Precisas de **Node.js 18+**.
+Precisas de **Node.js 22.5+** (recomendado Node 24+) — usa o SQLite embutido no Node, por isso **não precisas de compilar nada** nem de Visual Studio / build tools.
 
 ### 1. Backend (API)
 

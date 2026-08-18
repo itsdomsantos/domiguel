@@ -1,14 +1,17 @@
-import Database from 'better-sqlite3';
+import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
+
+// Usa o SQLite embutido no Node (node:sqlite) — sem dependências nativas
+// nem compilação. Requer Node 22.5+ (recomendado Node 24+).
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dataDir = path.join(__dirname, '..', 'data');
 fs.mkdirSync(dataDir, { recursive: true });
 
-const db = new Database(path.join(dataDir, 'domiguel.db'));
-db.pragma('journal_mode = WAL');
+const db = new DatabaseSync(path.join(dataDir, 'domiguel.db'));
+db.exec('PRAGMA journal_mode = WAL;');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
