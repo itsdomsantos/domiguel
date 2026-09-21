@@ -54,7 +54,7 @@ export default function Contact() {
                 <span>✉️</span>
                 <div>
                   <strong>Email</strong>
-                  <a href="mailto:ola@domiguel.dev">ola@domiguel.dev</a>
+                  <a href="mailto:domdotdevelopments@gmail.com">domdotdevelopments@gmail.com</a>
                 </div>
               </li>
               <li>

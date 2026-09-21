@@ -22,7 +22,7 @@ export default function Footer() {
           </div>
           <div className="footer__col">
             <h4>Contacto</h4>
-            <a href="mailto:ola@domiguel.dev">ola@domiguel.dev</a>
+            <a href="mailto:domdotdevelopments@gmail.com">domdotdevelopments@gmail.com</a>
             <Link to="/contacto">Pedir orçamento</Link>
             <Link to="/login" className="footer__admin">
               Área reservada
