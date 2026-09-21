@@ -52,8 +52,8 @@ export default function Contact() {
               <li>
                 <span>✉️</span>
                 <div>
-                  <strong>{t('contact.emailLabel')}</strong>
-                  <a href="mailto:ola@domiguel.dev">ola@domiguel.dev</a>
+                  <strong>Email</strong>
+                  <a href="mailto:domdotdevelopments@gmail.com">domdotdevelopments@gmail.com</a>
                 </div>
               </li>
               <li>
