@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../api.js';
@@ -6,6 +6,8 @@ import PageTransition from '../components/PageTransition.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
 import { useLang } from '../context/LanguageContext.jsx';
 import './home.css';
+
+const ComputerScene = lazy(() => import('../components/ComputerScene.jsx'));
 
 const serviceIcons = ['🌐', '📱', '🎨', '⚙️'];
 
@@ -47,6 +49,25 @@ export default function Home() {
                 {t('home.startProject')}
               </Link>
             </div>
+          </motion.div>
+
+          <motion.div
+            className="hero3d"
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
+          >
+            <div className="hero3d__glow" />
+            <Suspense
+              fallback={
+                <div className="hero3d__loading">
+                  <span className="spinner" />
+                </div>
+              }
+            >
+              <ComputerScene />
+            </Suspense>
+            <span className="hero3d__hint">{t('home.sceneHint')}</span>
           </motion.div>
         </div>
       </section>

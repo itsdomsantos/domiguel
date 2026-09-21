@@ -39,6 +39,7 @@ export const translations = {
         "We are Dom Dot. Developments. We design and develop modern websites, applications and digital experiences — from concept to launch.",
       seeWork: 'See our work →',
       startProject: 'Start a project',
+      sceneHint: 'Drag to explore ↻',
       servicesEyebrow: 'What we do',
       servicesTitle: 'End-to-end services',
       servicesSub:
@@ -160,6 +161,7 @@ export const translations = {
         'Somos a Dom Dot. Developments. Desenhamos e desenvolvemos websites, aplicações e experiências digitais modernas — do conceito ao lançamento.',
       seeWork: 'Ver o nosso trabalho →',
       startProject: 'Iniciar um projeto',
+      sceneHint: 'Arrasta para explorar ↻',
       servicesEyebrow: 'O que fazemos',
       servicesTitle: 'Serviços end-to-end',
       servicesSub:
