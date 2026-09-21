@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import api from '../api.js';
 import PageTransition from '../components/PageTransition.jsx';
+import { useLang } from '../context/LanguageContext.jsx';
 import './contact.css';
 
 const initial = { name: '', email: '', subject: '', body: '' };
@@ -10,6 +11,7 @@ export default function Contact() {
   const [form, setForm] = useState(initial);
   const [status, setStatus] = useState({ type: '', msg: '' });
   const [sending, setSending] = useState(false);
+  const { t } = useLang();
 
   function update(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -21,12 +23,12 @@ export default function Contact() {
     setSending(true);
     try {
       await api.post('/messages', form);
-      setStatus({ type: 'success', msg: 'Mensagem enviada! Respondemos em 48h. 🎉' });
+      setStatus({ type: 'success', msg: t('contact.success') });
       setForm(initial);
     } catch (err) {
       setStatus({
         type: 'error',
-        msg: err.response?.data?.error || 'Não foi possível enviar. Tenta novamente.',
+        msg: err.response?.data?.error || t('contact.errorGeneric'),
       });
     } finally {
       setSending(false);
@@ -43,12 +45,9 @@ export default function Contact() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="eyebrow">Contacto</span>
-            <h2>Vamos trabalhar juntos</h2>
-            <p>
-              Conta-nos sobre o teu projeto, ideia ou desafio. Respondemos a todas as mensagens em
-              menos de 48 horas.
-            </p>
+            <span className="eyebrow">{t('contact.eyebrow')}</span>
+            <h2>{t('contact.title')}</h2>
+            <p>{t('contact.sub')}</p>
             <ul className="contact__list">
               <li>
                 <span>✉️</span>
@@ -60,22 +59,22 @@ export default function Contact() {
               <li>
                 <span>⚡</span>
                 <div>
-                  <strong>Resposta rápida</strong>
-                  <span>Proposta em 48 horas</span>
+                  <strong>{t('contact.fastReplyLabel')}</strong>
+                  <span>{t('contact.fastReplyValue')}</span>
                 </div>
               </li>
               <li>
                 <span>🌍</span>
                 <div>
-                  <strong>Onde estamos</strong>
-                  <span>Trabalhamos remotamente, para todo o mundo</span>
+                  <strong>{t('contact.whereLabel')}</strong>
+                  <span>{t('contact.whereValue')}</span>
                 </div>
               </li>
               <li>
                 <span>🌐</span>
                 <div>
-                  <strong>Linkdin</strong>
-                  <a href="https://www.linkedin.com/in/dawnofdom/">Domingos Santos (dev)</a>
+                  <strong>{t('contact.linkedinLabel')}</strong>
+                  <a href="https://www.linkedin.com/in/dawnofdom/">{t('contact.linkedinValue')}</a>
                 </div>
               </li>
             </ul>
@@ -90,41 +89,47 @@ export default function Contact() {
           >
             {status.msg && <div className={`alert alert-${status.type}`}>{status.msg}</div>}
             <div className="field">
-              <label>Nome *</label>
-              <input name="name" value={form.name} onChange={update} placeholder="O teu nome" required />
+              <label>{t('contact.fieldName')} *</label>
+              <input
+                name="name"
+                value={form.name}
+                onChange={update}
+                placeholder={t('contact.fieldNamePlaceholder')}
+                required
+              />
             </div>
             <div className="field">
-              <label>Email *</label>
+              <label>{t('contact.fieldEmail')} *</label>
               <input
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={update}
-                placeholder="tu@email.com"
+                placeholder={t('contact.fieldEmailPlaceholder')}
                 required
               />
             </div>
             <div className="field">
-              <label>Assunto</label>
+              <label>{t('contact.fieldSubject')}</label>
               <input
                 name="subject"
                 value={form.subject}
                 onChange={update}
-                placeholder="Sobre o que queres falar?"
+                placeholder={t('contact.fieldSubjectPlaceholder')}
               />
             </div>
             <div className="field">
-              <label>Mensagem *</label>
+              <label>{t('contact.fieldMessage')} *</label>
               <textarea
                 name="body"
                 value={form.body}
                 onChange={update}
-                placeholder="Descreve o teu projeto ou ideia..."
+                placeholder={t('contact.fieldMessagePlaceholder')}
                 required
               />
             </div>
             <button type="submit" className="btn btn-primary btn-block" disabled={sending}>
-              {sending ? 'A enviar...' : 'Enviar mensagem'}
+              {sending ? t('contact.sending') : t('contact.send')}
             </button>
           </motion.form>
         </div>

@@ -28,7 +28,7 @@ export default function Login() {
     <div className="login">
       <div className="login__card card">
         <Link to="/" className="login__logo">
-          domiguel<span>.</span>
+          Dom Dot<span>.</span> Developments
         </Link>
         <h1>Área reservada</h1>
         <p>Inicia sessão para gerir o portfólio.</p>
