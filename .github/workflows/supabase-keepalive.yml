@@ -1,0 +1,53 @@
+name: Supabase keep-alive
+
+# Mantém o projeto Supabase (plano grátis) ativo. O plano grátis pausa o
+# projeto após ~7 dias sem atividade na base de dados. Este workflow faz uma
+# query leve à BD algumas vezes por semana para o manter acordado.
+#
+# Requer 2 secrets no repositório (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL       ex.: https://xxxxxxxx.supabase.co
+#   SUPABASE_ANON_KEY  a "anon public" key (Project Settings → API)
+
+on:
+  schedule:
+    # Corre às 07:13 UTC nos dias 1,3,5,... (dia sim, dia não). Bem dentro
+    # da janela de 7 dias, com margem para atrasos do agendador do GitHub.
+    - cron: '13 7 */2 * *'
+  workflow_dispatch: {} # permite correr manualmente pelo separador Actions
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST (query à base de dados)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_ANON_KEY:-}" ]; then
+            echo "::error::Faltam os secrets SUPABASE_URL e/ou SUPABASE_ANON_KEY."
+            exit 1
+          fi
+
+          # Uma query real a uma tabela mantém a BD ativa. Mesmo que o RLS
+          # devolva 0 linhas, o pedido chega à base de dados (é o que conta).
+          url="${SUPABASE_URL%/}/rest/v1/projects?select=id&limit=1"
+          echo "A fazer ping a: ${SUPABASE_URL%/}/rest/v1/projects"
+
+          code=$(curl -sS -o /tmp/body.txt -w "%{http_code}" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            "$url")
+
+          echo "HTTP $code"
+          echo "Resposta: $(head -c 300 /tmp/body.txt)"
+
+          # 2xx = ok. Um 401/500 significa projeto pausado, key errada, ou
+          # backend em baixo — falha o job para receberes notificação.
+          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+            echo "::error::Ping falhou (HTTP $code). O projeto pode estar pausado ou a key/URL estar errada."
+            exit 1
+          fi
+
+          echo "Supabase está acordado. ✅"
