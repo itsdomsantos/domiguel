@@ -16,8 +16,19 @@
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.4rem;
+  white-space: nowrap;
 }
-.footer__logo span { color: var(--brand-2); }
+.footer__logo-accent {
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--brand-2);
+}
+.footer__logo-muted {
+  color: var(--text-soft);
+  font-weight: 600;
+}
 .footer__brand p {
   color: var(--text-soft);
   margin-top: 12px;
