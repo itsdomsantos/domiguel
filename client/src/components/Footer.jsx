@@ -24,15 +24,9 @@ export default function Footer() {
             <Link to="/contacto">{t('nav.contact')}</Link>
           </div>
           <div className="footer__col">
-<<<<<<< HEAD
-            <h4>Contacto</h4>
-            <a href="mailto:domdotdevelopments@gmail.com">domdotdevelopments@gmail.com</a>
-            <Link to="/contacto">Pedir orçamento</Link>
-=======
             <h4>{t('footer.contact')}</h4>
-            <a href="mailto:ola@domiguel.dev">ola@domiguel.dev</a>
+            <a href="mailto:domdotdevelopments@gmail.com">domdotdevelopments@gmail.com</a>
             <Link to="/contacto">{t('footer.quote')}</Link>
->>>>>>> 6c5f6ea4d992f94fee115667a17abced0cf092c7
             <Link to="/login" className="footer__admin">
               {t('footer.admin')}
             </Link>

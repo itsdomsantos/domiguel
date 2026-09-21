@@ -1,5 +1,5 @@
 -- ─────────────────────────────────────────────────────────────
--- Esquema da base de dados do portfólio domiguel (Supabase / Postgres)
+-- Esquema da base de dados do portfólio Dom Dot. Developments (Supabase / Postgres)
 -- Cola isto no Supabase → SQL Editor → New query → Run
 -- ─────────────────────────────────────────────────────────────
 

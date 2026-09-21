@@ -1,4 +1,4 @@
-# domiguel — Estúdio de Desenvolvimento
+# Dom Dot. Developments — Estúdio de Desenvolvimento
 
 Website de portfólio moderno, limpo e fluido para mostrar criações, expor trabalho e receber contactos de novos clientes. Inclui um **painel de administração** completo para gerir os projetos sem tocar em código.
 
@@ -129,4 +129,4 @@ vercel dev             # abre em http://localhost:3000
 
 ---
 
-Feito com dedicação 🖤 — **domiguel**
+Feito com dedicação 🖤 — **Dom Dot. Developments**

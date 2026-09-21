@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('domiguel_token');
+    const token = localStorage.getItem('domdot_token');
     if (!token) {
       setLoading(false);
       return;
@@ -16,19 +16,19 @@ export function AuthProvider({ children }) {
     api
       .get('/auth/me')
       .then((res) => setUser(res.data.user))
-      .catch(() => localStorage.removeItem('domiguel_token'))
+      .catch(() => localStorage.removeItem('domdot_token'))
       .finally(() => setLoading(false));
   }, []);
 
   async function login(email, password) {
     const res = await api.post('/auth/login', { email, password });
-    localStorage.setItem('domiguel_token', res.data.token);
+    localStorage.setItem('domdot_token', res.data.token);
     setUser(res.data.user);
     return res.data.user;
   }
 
   function logout() {
-    localStorage.removeItem('domiguel_token');
+    localStorage.removeItem('domdot_token');
     setUser(null);
   }
 

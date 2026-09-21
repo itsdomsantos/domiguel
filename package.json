@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Portfólio domiguel — funções serverless (Vercel) + Supabase",
+  "description": "Portfólio Dom Dot. Developments — funções serverless (Vercel) + Supabase",
   "engines": {
     "node": ">=18"
   },

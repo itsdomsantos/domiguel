@@ -48,7 +48,7 @@ function makeScreenTexture() {
   });
   ctx.fillStyle = 'rgba(255,255,255,0.35)';
   ctx.font = '600 22px system-ui, sans-serif';
-  ctx.fillText('domiguel.jsx', 170, 40);
+  ctx.fillText('domdotdev.jsx', 170, 40);
 
   // Título gradiente grande
   const grad = ctx.createLinearGradient(70, 0, 640, 0);
