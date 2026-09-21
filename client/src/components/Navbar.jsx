@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useLang } from '../context/LanguageContext.jsx';
+import { LANGUAGES } from '../i18n/translations.js';
 import './navbar.css';
-
-const links = [
-  { to: '/', label: 'Início' },
-  { to: '/trabalho', label: 'Trabalho' },
-  { to: '/contacto', label: 'Contacto' },
-];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { lang, setLang, t } = useLang();
+
+  const links = [
+    { to: '/', label: t('nav.home') },
+    { to: '/trabalho', label: t('nav.work') },
+    { to: '/contacto', label: t('nav.contact') },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -26,7 +29,8 @@ export default function Navbar() {
     <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`}>
       <div className="container nav__inner">
         <Link to="/" className="nav__logo">
-          domiguel<span>.</span>
+          <span className="nav__logo-accent">Dom</span> Dot<span className="nav__logo-accent">.</span>{' '}
+          <span className="nav__logo-muted">Developments</span>
         </Link>
 
         <nav className={`nav__links ${open ? 'nav__links--open' : ''}`}>
@@ -40,8 +44,23 @@ export default function Navbar() {
               {l.label}
             </NavLink>
           ))}
+
+          <div className="nav__lang" role="group" aria-label={t('nav.langLabel')}>
+            {LANGUAGES.map((l) => (
+              <button
+                key={l.code}
+                type="button"
+                className={`nav__lang-btn ${lang === l.code ? 'nav__lang-btn--active' : ''}`}
+                onClick={() => setLang(l.code)}
+                aria-pressed={lang === l.code}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+
           <Link to="/contacto" className="btn btn-primary nav__cta">
-            Vamos falar
+            {t('nav.cta')}
           </Link>
         </nav>
 

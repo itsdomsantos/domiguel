@@ -86,7 +86,7 @@ export default function Admin() {
     <div className="admin">
       <aside className="admin__sidebar">
         <div className="admin__logo">
-          domiguel<span>.</span>
+          Dom Dot<span>.</span> Developments
         </div>
         <nav className="admin__nav">
           <Nav />

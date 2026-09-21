@@ -4,39 +4,15 @@ import { motion } from 'framer-motion';
 import api from '../api.js';
 import PageTransition from '../components/PageTransition.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
+import { useLang } from '../context/LanguageContext.jsx';
 import './home.css';
 
-const services = [
-  {
-    icon: '🌐',
-    title: 'Websites & Web Apps',
-    desc: 'Sites institucionais, plataformas e aplicações web rápidas, responsivas e escaláveis.',
-  },
-  {
-    icon: '📱',
-    title: 'Aplicações Móveis',
-    desc: 'Apps nativas e multiplataforma com foco em experiência e performance.',
-  },
-  {
-    icon: '🎨',
-    title: 'UI / UX Design',
-    desc: 'Interfaces limpas e intuitivas, desenhadas para converter e encantar.',
-  },
-  {
-    icon: '⚙️',
-    title: 'APIs & Backend',
-    desc: 'Arquiteturas robustas, integrações e sistemas preparados para crescer.',
-  },
-];
-
-const stats = [
-  { value: '30+', label: 'Projetos entregues' },
-  { value: '100%', label: 'Clientes satisfeitos' },
-  { value: '5★', label: 'Avaliação média' },
-];
+const serviceIcons = ['🌐', '📱', '🎨', '⚙️'];
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);
+  const { t } = useLang();
+  const services = t('home.services');
 
   useEffect(() => {
     api
@@ -56,42 +32,32 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="hero__content"
           >
-            <span className="eyebrow">● Estúdio de desenvolvimento</span>
+            <span className="eyebrow">{t('home.eyebrow')}</span>
             <h1 className="hero__title">
-              Construímos <span className="gradient-text">produtos digitais</span> que fazem a
-              diferença.
+              {t('home.heroTitlePre')}
+              <span className="gradient-text">{t('home.heroTitleHighlight')}</span>
+              {t('home.heroTitlePost')}
             </h1>
-            <p className="hero__sub">
-              Somos a domiguel. Desenhamos e desenvolvemos websites, aplicações e experiências
-              digitais modernas — do conceito ao lançamento.
-            </p>
+            <p className="hero__sub">{t('home.heroSub')}</p>
             <div className="hero__actions">
               <Link to="/trabalho" className="btn btn-primary">
-                Ver o nosso trabalho →
+                {t('home.seeWork')}
               </Link>
               <Link to="/contacto" className="btn btn-ghost">
-                Iniciar um projeto
+                {t('home.startProject')}
               </Link>
-            </div>
-            <div className="hero__stats">
-              {stats.map((s) => (
-                <div key={s.label} className="hero__stat">
-                  <strong>{s.value}</strong>
-                  <span>{s.label}</span>
-                </div>
-              ))}
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* SERVIÇOS */}
+      {/* SERVICES */}
       <section className="section">
         <div className="container">
           <div className="section__head">
-            <span className="eyebrow">O que fazemos</span>
-            <h2>Serviços end-to-end</h2>
-            <p>Do primeiro esboço à entrega final, tratamos de tudo com rigor e criatividade.</p>
+            <span className="eyebrow">{t('home.servicesEyebrow')}</span>
+            <h2>{t('home.servicesTitle')}</h2>
+            <p>{t('home.servicesSub')}</p>
           </div>
           <div className="services__grid">
             {services.map((s, i) => (
@@ -103,7 +69,7 @@ export default function Home() {
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.45, delay: i * 0.08 }}
               >
-                <span className="service__icon">{s.icon}</span>
+                <span className="service__icon">{serviceIcons[i]}</span>
                 <h3>{s.title}</h3>
                 <p>{s.desc}</p>
               </motion.div>
@@ -112,17 +78,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* PROJETOS EM DESTAQUE */}
+      {/* FEATURED PROJECTS */}
       {featured.length > 0 && (
         <section className="section">
           <div className="container">
             <div className="section__head section__head--row">
               <div>
-                <span className="eyebrow">Portefólio</span>
-                <h2>Trabalho em destaque</h2>
+                <span className="eyebrow">{t('home.portfolioEyebrow')}</span>
+                <h2>{t('home.featuredTitle')}</h2>
               </div>
               <Link to="/trabalho" className="btn btn-ghost">
-                Ver tudo
+                {t('home.seeAll')}
               </Link>
             </div>
             <div className="grid-3">
@@ -139,11 +105,12 @@ export default function Home() {
         <div className="container">
           <div className="cta">
             <h2>
-              Tens uma ideia? <span className="gradient-text">Vamos construí-la.</span>
+              {t('home.ctaTitlePre')}
+              <span className="gradient-text">{t('home.ctaTitleHighlight')}</span>
             </h2>
-            <p>Conta-nos o que precisas e recebe uma proposta em 48h.</p>
+            <p>{t('home.ctaSub')}</p>
             <Link to="/contacto" className="btn btn-primary">
-              Falar connosco
+              {t('home.ctaButton')}
             </Link>
           </div>
         </div>

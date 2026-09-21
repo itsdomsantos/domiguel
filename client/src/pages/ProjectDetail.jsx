@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api.js';
 import PageTransition from '../components/PageTransition.jsx';
+import { useLang } from '../context/LanguageContext.jsx';
 import './project-detail.css';
 
 export default function ProjectDetail() {
@@ -9,6 +10,7 @@ export default function ProjectDetail() {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const { t } = useLang();
 
   useEffect(() => {
     setLoading(true);
@@ -31,12 +33,12 @@ export default function ProjectDetail() {
     return (
       <PageTransition>
         <div className="container" style={{ padding: '160px 24px', textAlign: 'center' }}>
-          <h2>Projeto não encontrado</h2>
+          <h2>{t('project.notFoundTitle')}</h2>
           <p style={{ color: 'var(--text-soft)', margin: '12px 0 24px' }}>
-            Este projeto pode ter sido removido.
+            {t('project.notFoundSub')}
           </p>
           <Link to="/trabalho" className="btn btn-primary">
-            Ver todos os projetos
+            {t('project.seeAll')}
           </Link>
         </div>
       </PageTransition>
@@ -48,7 +50,7 @@ export default function ProjectDetail() {
       <article className="pd">
         <div className="container">
           <Link to="/trabalho" className="pd__back">
-            ← Voltar ao trabalho
+            {t('project.back')}
           </Link>
           <span className="pd__category">{project.category}</span>
           <h1 className="pd__title">{project.title}</h1>
@@ -65,12 +67,12 @@ export default function ProjectDetail() {
           <div className="pd__links">
             {project.live_url && (
               <a href={project.live_url} target="_blank" rel="noreferrer" className="btn btn-primary">
-                Ver site ao vivo ↗
+                {t('project.liveSite')}
               </a>
             )}
             {project.repo_url && (
               <a href={project.repo_url} target="_blank" rel="noreferrer" className="btn btn-ghost">
-                Código ↗
+                {t('project.code')}
               </a>
             )}
           </div>
@@ -92,10 +94,10 @@ export default function ProjectDetail() {
           </div>
 
           <div className="pd__cta">
-            <h3>Gostaste deste projeto?</h3>
-            <p>Vamos criar algo assim (ou melhor) para ti.</p>
+            <h3>{t('project.likedTitle')}</h3>
+            <p>{t('project.likedSub')}</p>
             <Link to="/contacto" className="btn btn-primary">
-              Iniciar um projeto
+              {t('project.startProject')}
             </Link>
           </div>
         </div>

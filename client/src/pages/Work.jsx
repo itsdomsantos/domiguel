@@ -2,11 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import api from '../api.js';
 import PageTransition from '../components/PageTransition.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
+import { useLang } from '../context/LanguageContext.jsx';
+
+const ALL = '__all__';
 
 export default function Work() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('Todos');
+  const [filter, setFilter] = useState(ALL);
+  const { t } = useLang();
 
   useEffect(() => {
     api
@@ -18,19 +22,19 @@ export default function Work() {
 
   const categories = useMemo(() => {
     const set = new Set(projects.map((p) => p.category).filter(Boolean));
-    return ['Todos', ...set];
+    return [ALL, ...set];
   }, [projects]);
 
-  const visible = filter === 'Todos' ? projects : projects.filter((p) => p.category === filter);
+  const visible = filter === ALL ? projects : projects.filter((p) => p.category === filter);
 
   return (
     <PageTransition>
       <section className="section" style={{ paddingTop: 130 }}>
         <div className="container">
           <div className="section__head">
-            <span className="eyebrow">Portefólio</span>
-            <h2>O nosso trabalho</h2>
-            <p>Uma seleção de projetos que desenhámos e construímos com paixão.</p>
+            <span className="eyebrow">{t('work.eyebrow')}</span>
+            <h2>{t('work.title')}</h2>
+            <p>{t('work.sub')}</p>
           </div>
 
           {categories.length > 1 && (
@@ -41,7 +45,7 @@ export default function Work() {
                   className={`filter ${filter === c ? 'filter--active' : ''}`}
                   onClick={() => setFilter(c)}
                 >
-                  {c}
+                  {c === ALL ? t('work.all') : c}
                 </button>
               ))}
             </div>
@@ -52,9 +56,7 @@ export default function Work() {
               <div className="spinner" />
             </div>
           ) : visible.length === 0 ? (
-            <p style={{ color: 'var(--text-dim)', marginTop: 40 }}>
-              Ainda não há projetos nesta categoria. Volta em breve!
-            </p>
+            <p style={{ color: 'var(--text-dim)', marginTop: 40 }}>{t('work.empty')}</p>
           ) : (
             <div className="grid-3">
               {visible.map((p, i) => (
