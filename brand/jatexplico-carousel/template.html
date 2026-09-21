@@ -45,8 +45,12 @@
       .blob-b { width: 460px; height: 460px; bottom: -160px; left: -140px; background: radial-gradient(circle, rgba(161,216,132,0.5), transparent 65%); }
 
       .top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2; }
-      .brand { font-family: var(--display); font-weight: 800; font-size: 44px; letter-spacing: -0.01em; color: var(--tinta); }
-      .brand .ap { color: var(--marcador); }
+      .logo-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        background: #fff; border-radius: 24px; padding: 14px 18px;
+        box-shadow: 0 18px 40px -20px rgba(0,40,85,0.35); border: 1px solid rgba(0,40,85,0.06);
+      }
+      .logo-badge img { display: block; height: 96px; width: auto; }
       .index { font-family: var(--display); font-weight: 700; font-size: 27px; color: var(--tinta-2); opacity: 0.7; letter-spacing: 0.08em; }
 
       .body { flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; }
@@ -107,7 +111,7 @@
       <div class="blob blob-a"></div>
       <div class="blob blob-b"></div>
       <div class="top">
-        <div class="brand">Já T<span class="ap">'</span>Explico</div>
+        <div class="logo-badge"><img id="logo" alt="Já T'Explico" /></div>
         <div class="index" id="index">01 / 03</div>
       </div>
       <div class="body" id="body"></div>

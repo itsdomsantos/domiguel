@@ -6,6 +6,8 @@ import { dirname, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const html = readFileSync(join(__dirname, 'template.html'), 'utf8');
+const logoDataUri =
+  'data:image/png;base64,' + readFileSync(join(__dirname, 'logo.png')).toString('base64');
 
 const UNDER = `<svg viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true"><path d="M8 27 C 120 11, 250 34, 380 18 S 560 9, 592 22" /></svg>`;
 
@@ -59,6 +61,9 @@ for (let i = 0; i < slides.length; i++) {
   const page = await browser.newPage({ viewport: { width: 1080, height: 1350 }, deviceScaleFactor: 2 });
   await page.setContent(html, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
+  await page.evaluate((logo) => {
+    document.getElementById('logo').src = logo;
+  }, logoDataUri);
   await page.evaluate((s) => {
     document.getElementById('index').textContent = s.index;
     document.getElementById('body').innerHTML = s.body;

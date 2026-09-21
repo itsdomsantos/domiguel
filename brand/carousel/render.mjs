@@ -43,7 +43,7 @@ const slides = [
       </div>
       <p class="lead" style="margin-top:52px">Got an idea? <span class="grad" style="font-weight:600">Let's build it.</span> Proposal within 48h.</p>
     `,
-    footright: `<div style="text-align:right"><div class="cta">ola@domiguel.dev</div><div class="contact">link in bio</div></div>`,
+    footright: `<div style="text-align:right"><div class="cta">Let's talk →</div><div class="contact">link in bio</div></div>`,
     dot: 2,
   },
 ];
