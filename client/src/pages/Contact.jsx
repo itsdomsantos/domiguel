@@ -1,39 +1,12 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import api from '../api.js';
 import PageTransition from '../components/PageTransition.jsx';
 import { useLang } from '../context/LanguageContext.jsx';
+import { useContactForm, CONTACT_EMAIL, LINKEDIN_URL } from '../hooks/useContactForm.js';
 import './contact.css';
 
-const initial = { name: '', email: '', subject: '', body: '' };
-
 export default function Contact() {
-  const [form, setForm] = useState(initial);
-  const [status, setStatus] = useState({ type: '', msg: '' });
-  const [sending, setSending] = useState(false);
+  const { form, status, sending, update, submit } = useContactForm();
   const { t } = useLang();
-
-  function update(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  }
-
-  async function submit(e) {
-    e.preventDefault();
-    setStatus({ type: '', msg: '' });
-    setSending(true);
-    try {
-      await api.post('/messages', form);
-      setStatus({ type: 'success', msg: t('contact.success') });
-      setForm(initial);
-    } catch (err) {
-      setStatus({
-        type: 'error',
-        msg: err.response?.data?.error || t('contact.errorGeneric'),
-      });
-    } finally {
-      setSending(false);
-    }
-  }
 
   return (
     <PageTransition>
@@ -53,7 +26,7 @@ export default function Contact() {
                 <span>✉️</span>
                 <div>
                   <strong>{t('contact.emailLabel')}</strong>
-                  <a href="mailto:ola@domiguel.dev">ola@domiguel.dev</a>
+                  <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
                 </div>
               </li>
               <li>
@@ -74,7 +47,7 @@ export default function Contact() {
                 <span>🌐</span>
                 <div>
                   <strong>{t('contact.linkedinLabel')}</strong>
-                  <a href="https://www.linkedin.com/in/dawnofdom/">{t('contact.linkedinValue')}</a>
+                  <a href={LINKEDIN_URL}>{t('contact.linkedinValue')}</a>
                 </div>
               </li>
             </ul>

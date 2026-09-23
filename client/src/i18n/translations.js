@@ -118,6 +118,29 @@ export const translations = {
       startProject: 'Start a project',
     },
 
+    // Desktop (home)
+    desktop: {
+      hint: 'Click the laptop to open it',
+      open: 'Open',
+      skip: 'Skip intro',
+      loading: 'Loading',
+      replay: 'Replay intro',
+      files: { projects: 'work/', about: 'about.txt', contact: 'contact.vcf' },
+      close: 'Close window',
+      overview: '← Overview',
+      tech: 'Technologies',
+      year: 'Year',
+      category: 'Category',
+      status: 'Status',
+      statusLive: 'Live',
+      links: 'Links',
+      repo: 'Repository ↗',
+      fullPage: 'Full project page →',
+      showPanel: 'Show details',
+      hidePanel: 'Hide details',
+      openProject: 'Select a project to see its details.',
+    },
+
     // Not found
     notFound: {
       sub: "The page you're looking for doesn't exist.",
@@ -234,6 +257,28 @@ export const translations = {
       likedTitle: 'Gostaste deste projeto?',
       likedSub: 'Vamos criar algo assim (ou melhor) para ti.',
       startProject: 'Iniciar um projeto',
+    },
+
+    desktop: {
+      hint: 'Clica no portátil para o abrir',
+      open: 'Abrir',
+      skip: 'Saltar intro',
+      loading: 'A carregar',
+      replay: 'Repetir intro',
+      files: { projects: 'trabalho/', about: 'sobre.txt', contact: 'contacto.vcf' },
+      close: 'Fechar janela',
+      overview: '← Visão geral',
+      tech: 'Tecnologias',
+      year: 'Ano',
+      category: 'Categoria',
+      status: 'Estado',
+      statusLive: 'Online',
+      links: 'Ligações',
+      repo: 'Repositório ↗',
+      fullPage: 'Página completa do projeto →',
+      showPanel: 'Mostrar detalhes',
+      hidePanel: 'Esconder detalhes',
+      openProject: 'Seleciona um projeto para ver os detalhes.',
     },
 
     notFound: {

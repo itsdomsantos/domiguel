@@ -1,25 +1,17 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import api from '../api.js';
 import PageTransition from '../components/PageTransition.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
 import { useLang } from '../context/LanguageContext.jsx';
+import { useProjects } from '../hooks/useProjects.js';
 import './home.css';
 
 const serviceIcons = ['🌐', '📱', '🎨', '⚙️'];
 
 export default function Home() {
-  const [featured, setFeatured] = useState([]);
+  const featured = useProjects({ featured: true }).projects.slice(0, 3);
   const { t } = useLang();
   const services = t('home.services');
-
-  useEffect(() => {
-    api
-      .get('/projects', { params: { featured: 'true' } })
-      .then((res) => setFeatured(res.data.slice(0, 3)))
-      .catch(() => {});
-  }, []);
 
   return (
     <PageTransition>

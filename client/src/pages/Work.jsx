@@ -1,24 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
-import api from '../api.js';
+import { useMemo, useState } from 'react';
 import PageTransition from '../components/PageTransition.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
 import { useLang } from '../context/LanguageContext.jsx';
+import { useProjects } from '../hooks/useProjects.js';
 
 const ALL = '__all__';
 
 export default function Work() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { projects, loading } = useProjects();
   const [filter, setFilter] = useState(ALL);
   const { t } = useLang();
-
-  useEffect(() => {
-    api
-      .get('/projects')
-      .then((res) => setProjects(res.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
 
   const categories = useMemo(() => {
     const set = new Set(projects.map((p) => p.category).filter(Boolean));
