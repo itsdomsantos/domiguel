@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useLang } from '../context/LanguageContext.jsx';
 import { LANGUAGES } from '../i18n/translations.js';
 import { DrawerIcon, SheetIcon, PostcardIcon } from './icons.jsx';
-import { Window, ProjectsWindow, AboutWindow, ContactWindow } from './windows.jsx';
+import { Window, ProjectsWindow, ProjectWindow, AboutWindow, ContactWindow } from './windows.jsx';
 import ContextPanel from './ContextPanel.jsx';
 
 const FILES = [
@@ -11,6 +10,9 @@ const FILES = [
   { id: 'about', Icon: SheetIcon, variant: 'paper', pos: { x: 176, y: 44 } },
   { id: 'contact', Icon: PostcardIcon, variant: 'card', pos: { x: 154, y: 32 } },
 ];
+
+// Janelas possíveis: os ficheiros do desktop + a ficha completa de um projeto.
+const WINDOWS = [...FILES, { id: 'project', variant: 'paper', pos: { x: 210, y: 28 } }];
 
 function Clock() {
   const { lang } = useLang();
@@ -29,7 +31,7 @@ function Clock() {
 export default function Desktop({ projects, loading, animateIn, onReplay }) {
   const { lang, setLang, t } = useLang();
   const [stack, setStack] = useState([]); // ids por ordem de profundidade (último = à frente)
-  const [positions, setPositions] = useState(() => Object.fromEntries(FILES.map((f) => [f.id, f.pos])));
+  const [positions, setPositions] = useState(() => Object.fromEntries(WINDOWS.map((f) => [f.id, f.pos])));
   const [selectedSlug, setSelectedSlug] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
 
@@ -53,6 +55,14 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
     open('contact');
     setPanelOpen(false);
   }
+  function openProject() {
+    open('project');
+    setPanelOpen(false);
+  }
+  function clearSelection() {
+    setSelectedSlug(null);
+    close('project');
+  }
 
   const content = {
     projects: (
@@ -60,6 +70,7 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
     ),
     about: <AboutWindow onContact={openContact} />,
     contact: <ContactWindow />,
+    project: selected && <ProjectWindow project={selected} onContact={openContact} />,
   };
 
   return (
@@ -69,8 +80,15 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
           Dom Dot<span className="dk-dot">.</span>
         </span>
         <nav className="dk-menubar__nav">
-          <Link to="/trabalho">{t('nav.work')}</Link>
-          <Link to="/contacto">{t('nav.contact')}</Link>
+          <button type="button" onClick={() => open('projects')}>
+            {t('nav.work')}
+          </button>
+          <button type="button" onClick={() => open('about')}>
+            {t('desktop.about')}
+          </button>
+          <button type="button" onClick={() => open('contact')}>
+            {t('nav.contact')}
+          </button>
         </nav>
         <div className="dk-menubar__right">
           {onReplay && (
@@ -114,13 +132,13 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
         </ul>
 
         {/* ordem do DOM fixa (não perde foco ao trocar de janela); a profundidade vem do z-index */}
-        {FILES.filter((f) => stack.includes(f.id)).map((file) => {
+        {WINDOWS.filter((w) => stack.includes(w.id) && content[w.id]).map((file) => {
           const { id } = file;
           return (
             <Window
               key={id}
               id={id}
-              title={t(`desktop.files.${id}`)}
+              title={id === 'project' ? selected.title : t(`desktop.files.${id}`)}
               variant={file.variant}
               z={10 + stack.indexOf(id)}
               pos={positions[id]}
@@ -140,8 +158,9 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
         expanded={panelOpen}
         onToggle={() => setPanelOpen((o) => !o)}
         onSelect={select}
-        onClear={() => setSelectedSlug(null)}
+        onClear={clearSelection}
         onContact={openContact}
+        onOpenProject={openProject}
       />
     </div>
   );

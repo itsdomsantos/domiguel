@@ -119,6 +119,59 @@ export function ProjectsWindow({ projects, loading, selectedSlug, onSelect }) {
   );
 }
 
+// Ficha completa de um projeto — o mesmo conteúdo da página /projeto/:slug, dentro do desktop.
+export function ProjectWindow({ project, onContact }) {
+  const { t } = useLang();
+  return (
+    <article className="dk-doc">
+      <p className="dk-doc__eyebrow">{[project.category, projectYear(project)].filter(Boolean).join(' · ')}</p>
+      <h3 className="dk-doc__title">{project.title}</h3>
+      <p className="dk-doc__lead">{project.summary}</p>
+
+      {project.cover_image && (
+        <div className="dk-doc__cover">
+          <img src={project.cover_image} alt={project.title} />
+        </div>
+      )}
+
+      {(project.description || '')
+        .split('\n')
+        .filter(Boolean)
+        .map((para, i) => (
+          <p key={i}>{para}</p>
+        ))}
+
+      {project.tags?.length > 0 && (
+        <p className="dk-doc__tags">
+          {project.tags.map((tag) => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </p>
+      )}
+
+      <div className="dk-doc__links">
+        {project.live_url && (
+          <a href={project.live_url} target="_blank" rel="noreferrer" className="dk-btn dk-btn--accent">
+            {t('project.liveSite')}
+          </a>
+        )}
+        {project.repo_url && (
+          <a href={project.repo_url} target="_blank" rel="noreferrer" className="dk-btn">
+            {t('project.code')}
+          </a>
+        )}
+      </div>
+
+      <hr className="dk-doc__rule" />
+      <p className="dk-doc__closing">{t('project.likedTitle')}</p>
+      <p>{t('project.likedSub')}</p>
+      <button type="button" className="dk-btn dk-btn--ink" onClick={onContact}>
+        {t('project.startProject')} →
+      </button>
+    </article>
+  );
+}
+
 // Documento de texto — o conteúdo de apresentação que já existe no site.
 export function AboutWindow({ onContact }) {
   const { t } = useLang();

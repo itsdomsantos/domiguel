@@ -1,10 +1,18 @@
-import { Link } from 'react-router-dom';
 import { useLang } from '../context/LanguageContext.jsx';
 import { projectYear } from './windows.jsx';
 
 // Painel lateral permanente: resumo por defeito, detalhes quando há um projeto selecionado.
 // Em ecrã pequeno é uma folha inferior que se expande (expanded/onToggle).
-export default function ContextPanel({ project, featured, expanded, onToggle, onSelect, onClear, onContact }) {
+export default function ContextPanel({
+  project,
+  featured,
+  expanded,
+  onToggle,
+  onSelect,
+  onClear,
+  onContact,
+  onOpenProject,
+}) {
   const { t } = useLang();
 
   return (
@@ -69,9 +77,9 @@ export default function ContextPanel({ project, featured, expanded, onToggle, on
                   {t('desktop.repo')}
                 </a>
               )}
-              <Link to={`/projeto/${project.slug}`} className="dk-link-btn">
+              <button type="button" className="dk-link-btn" onClick={onOpenProject}>
                 {t('desktop.fullPage')}
-              </Link>
+              </button>
             </div>
           </div>
         ) : (
