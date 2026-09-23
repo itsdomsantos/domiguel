@@ -2,7 +2,7 @@ import { useState } from 'react';
 import api from '../api.js';
 import { useLang } from '../context/LanguageContext.jsx';
 
-export const CONTACT_EMAIL = 'ola@domiguel.dev';
+export const CONTACT_EMAIL = 'domdotdevelopments@gmail.com';
 export const LINKEDIN_URL = 'https://www.linkedin.com/in/dawnofdom/';
 
 const initial = { name: '', email: '', subject: '', body: '' };
