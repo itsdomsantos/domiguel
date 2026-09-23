@@ -1,6 +1,6 @@
 /* ─── Página inicial: intro 3D + desktop ───
    Estilo próprio, isolado do resto do site: preto quente, papel, uma só cor de sinal,
-   cantos retos, linhas de 1px. Serifa editorial + mono para a interface. */
+   cantos retos, linhas de 1px. Fontes do site: Sora (títulos) + Inter (interface). */
 
 .dk-root {
   position: fixed;
@@ -21,8 +21,9 @@
   --dk-accent: #ff5a1f;
   --dk-line: rgba(236, 229, 211, 0.14);
   --dk-line-strong: rgba(236, 229, 211, 0.3);
-  --dk-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
-  --dk-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  /* as mesmas fontes do resto do site */
+  --dk-serif: var(--font-display);
+  --dk-mono: var(--font-body);
 }
 
 /* ─── Intro ─── */
@@ -194,7 +195,8 @@
 
 .dk-menubar__brand {
   font-family: var(--dk-serif);
-  font-size: 19px;
+  font-weight: 700;
+  font-size: 16px;
   text-transform: none;
   letter-spacing: 0;
 }
@@ -270,7 +272,6 @@
   left: 20px;
   bottom: -0.18em;
   font-family: var(--dk-serif);
-  font-style: italic;
   font-size: clamp(90px, 15vw, 250px);
   line-height: 1;
   color: transparent;
@@ -581,14 +582,14 @@
   place-items: center;
   height: 100%;
   font-family: var(--dk-serif);
-  font-style: italic;
   font-size: 56px;
   color: var(--dk-paper-dim);
 }
 
 .dk-frame__title {
   font-family: var(--dk-serif);
-  font-size: 21px;
+  font-weight: 600;
+  font-size: 17px;
   line-height: 1.1;
 }
 
@@ -633,7 +634,8 @@
 
 .dk-doc__title {
   font-family: var(--dk-serif);
-  font-weight: 400;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   font-size: clamp(30px, 4vw, 40px);
   line-height: 1.04;
   letter-spacing: -0.01em;
@@ -642,7 +644,6 @@
 
 .dk-doc em,
 .dk-panel__title em {
-  font-style: italic;
   color: var(--dk-accent);
 }
 
@@ -685,9 +686,9 @@
 }
 
 .dk-doc__list strong {
-  font-weight: 400;
-  font-style: italic;
-  font-size: 21px;
+  font-family: var(--dk-serif);
+  font-weight: 600;
+  font-size: 17px;
 }
 
 .dk-doc__list span {
@@ -741,7 +742,8 @@
 
 .dk-card__title {
   font-family: var(--dk-serif);
-  font-weight: 400;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   font-size: 32px;
   line-height: 1.02;
   padding-right: 80px;
@@ -874,7 +876,8 @@
 
 .dk-panel__title {
   font-family: var(--dk-serif);
-  font-weight: 400;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   font-size: 34px;
   line-height: 1.02;
   letter-spacing: -0.01em;
@@ -915,7 +918,8 @@
   border-bottom: 1px solid var(--dk-line);
   color: var(--dk-paper);
   font-family: var(--dk-serif);
-  font-size: 20px;
+  font-weight: 600;
+  font-size: 16px;
   text-align: left;
   cursor: pointer;
 }

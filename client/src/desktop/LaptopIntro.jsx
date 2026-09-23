@@ -38,7 +38,7 @@ function drawScreen(ctx, w, h) {
   ctx.fillStyle = 'rgba(236, 229, 211, 0.18)';
   ctx.fillRect(0, 30, w, 1);
   ctx.fillStyle = PAPER;
-  ctx.font = '600 15px "IBM Plex Mono", monospace';
+  ctx.font = '700 15px Sora, system-ui, sans-serif';
   ctx.fillText('Dom Dot', 16, 20);
   ctx.fillStyle = ACCENT;
   ctx.fillRect(90, 15, 5, 5);
