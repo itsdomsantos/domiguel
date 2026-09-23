@@ -23,9 +23,8 @@ function Clock() {
   }, []);
   const locale = lang === 'pt' ? 'pt-PT' : 'en-GB';
   return (
-    <time className="dk-clock" dateTime={now.toISOString()}>
-      <span>{now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}</span>
-      <span className="dk-clock__date">{now.toLocaleDateString(locale)}</span>
+    <time className="dk-menubar__clock" dateTime={now.toISOString()}>
+      {now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
     </time>
   );
 }
@@ -33,7 +32,6 @@ function Clock() {
 export default function Desktop({ projects, loading, animateIn, onReplay }) {
   const { lang, setLang, t } = useLang();
   const [stack, setStack] = useState([]); // janelas abertas por ordem de profundidade (último = à frente)
-  const [minimized, setMinimized] = useState([]);
   const [maximized, setMaximized] = useState([]);
   const [positions, setPositions] = useState(() => Object.fromEntries(WINDOWS.map((w) => [w.id, w.pos])));
   const [selectedSlug, setSelectedSlug] = useState(null);
@@ -41,35 +39,30 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
 
   const selected = projects.find((p) => p.slug === selectedSlug) || null;
   const featured = projects.filter((p) => p.featured).slice(0, 4);
-  const visibleStack = stack.filter((id) => !minimized.includes(id));
-  const activeId = visibleStack[visibleStack.length - 1];
+  const activeId = stack[stack.length - 1];
 
   function open(id) {
     setStack((s) => [...s.filter((w) => w !== id), id]);
-    setMinimized((m) => m.filter((w) => w !== id));
   }
   function close(id) {
     setStack((s) => s.filter((w) => w !== id));
-    setMinimized((m) => m.filter((w) => w !== id));
     setMaximized((m) => m.filter((w) => w !== id));
-  }
-  function minimize(id) {
-    setMinimized((m) => (m.includes(id) ? m : [...m, id]));
   }
   function toggleMax(id) {
     setMaximized((m) => (m.includes(id) ? m.filter((w) => w !== id) : [...m, id]));
   }
-  // botão da barra de tarefas: minimiza a janela ativa, senão traz para a frente
-  function taskbarClick(id) {
-    if (id === activeId) minimize(id);
-    else open(id);
-  }
   function move(id, pos) {
     setPositions((p) => ({ ...p, [id]: pos }));
   }
+  // painel: mostra o projeto
   function select(slug) {
     setSelectedSlug(slug);
     setPanelOpen(true);
+  }
+  // grelha de projetos: mostra no painel e abre logo a ficha completa
+  function openFromGrid(slug) {
+    setSelectedSlug(slug);
+    open('project');
   }
   function openContact() {
     open('contact');
@@ -88,7 +81,7 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
 
   const content = {
     projects: (
-      <ProjectsWindow projects={projects} loading={loading} selectedSlug={selectedSlug} onSelect={select} />
+      <ProjectsWindow projects={projects} loading={loading} selectedSlug={selectedSlug} onSelect={openFromGrid} />
     ),
     about: <AboutWindow onContact={openContact} />,
     contact: <ContactWindow />,
@@ -99,6 +92,45 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
 
   return (
     <div className={`dk ${animateIn ? 'dk--enter' : ''}`}>
+      <header className="dk-menubar">
+        <span className="dk-menubar__brand">
+          Dom Dot<span className="dk-dot">.</span>
+        </span>
+        <nav className="dk-menubar__nav">
+          <button type="button" onClick={() => open('projects')}>
+            {t('nav.work')}
+          </button>
+          <button type="button" onClick={() => open('about')}>
+            {t('desktop.about')}
+          </button>
+          <button type="button" onClick={() => open('contact')}>
+            {t('nav.contact')}
+          </button>
+        </nav>
+        <div className="dk-menubar__right">
+          {onReplay && (
+            <button type="button" className="dk-menubar__btn" onClick={onReplay} title={t('desktop.replay')}>
+              <span aria-hidden="true">⏻</span>
+              <span className="dk-sr">{t('desktop.replay')}</span>
+            </button>
+          )}
+          <div className="dk-lang" role="group" aria-label={t('nav.langLabel')}>
+            {LANGUAGES.map((l) => (
+              <button
+                key={l.code}
+                type="button"
+                className="dk-menubar__btn"
+                aria-pressed={lang === l.code}
+                onClick={() => setLang(l.code)}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+          <Clock />
+        </div>
+      </header>
+
       <main className="dk-surface">
         <ul className="dk-files">
           {FILES.map(({ id, Icon }) => (
@@ -128,11 +160,9 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
             pos={positions[id]}
             active={id === activeId}
             maximized={maximized.includes(id)}
-            minimized={minimized.includes(id)}
             onMove={move}
             onFocus={open}
             onClose={close}
-            onMinimize={minimize}
             onToggleMax={toggleMax}
           >
             {content[id]}
@@ -142,6 +172,7 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
 
       <ContextPanel
         project={selected}
+        projects={projects}
         featured={featured}
         expanded={panelOpen}
         onToggle={() => setPanelOpen((o) => !o)}
@@ -150,50 +181,6 @@ export default function Desktop({ projects, loading, animateIn, onReplay }) {
         onContact={openContact}
         onOpenProject={openProject}
       />
-
-      <footer className="dk-taskbar">
-        <span className="dk-taskbar__brand">
-          Dom Dot<span className="dk-dot">.</span>
-        </span>
-
-        <div className="dk-tasks" role="toolbar" aria-label={t('desktop.openWindows')}>
-          {openWindows.map(({ id, Icon }) => (
-            <button
-              key={id}
-              type="button"
-              className={`dk-task ${minimized.includes(id) ? 'dk-task--min' : ''}`}
-              aria-pressed={id === activeId}
-              onClick={() => taskbarClick(id)}
-            >
-              <Icon className="dk-task__icon" />
-              <span className="dk-task__label">{titleOf(id)}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="dk-tray">
-          {onReplay && (
-            <button type="button" className="dk-tray__btn" onClick={onReplay} title={t('desktop.replay')}>
-              <span aria-hidden="true">⏻</span>
-              <span className="dk-sr">{t('desktop.replay')}</span>
-            </button>
-          )}
-          <div className="dk-lang" role="group" aria-label={t('nav.langLabel')}>
-            {LANGUAGES.map((l) => (
-              <button
-                key={l.code}
-                type="button"
-                className="dk-tray__btn"
-                aria-pressed={lang === l.code}
-                onClick={() => setLang(l.code)}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-          <Clock />
-        </div>
-      </footer>
     </div>
   );
 }

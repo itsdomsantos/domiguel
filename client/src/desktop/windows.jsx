@@ -18,7 +18,7 @@ function track(onMove) {
 }
 
 // Moldura de janela: arrastar pela barra, duplo clique para maximizar,
-// minimizar/maximizar/fechar. Esc fecha.
+// maximizar/fechar. Esc fecha.
 export function Window({
   id,
   title,
@@ -28,11 +28,9 @@ export function Window({
   pos,
   active,
   maximized,
-  minimized,
   onMove,
   onFocus,
   onClose,
-  onMinimize,
   onToggleMax,
   children,
 }) {
@@ -40,8 +38,8 @@ export function Window({
   const { t } = useLang();
 
   useEffect(() => {
-    if (!minimized) ref.current?.focus();
-  }, [minimized]);
+    ref.current?.focus();
+  }, []);
 
   function startDrag(e) {
     if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('button')) return;
@@ -54,7 +52,6 @@ export function Window({
   const classes = ['dk-win', `dk-win--${variant}`];
   if (active) classes.push('dk-win--active');
   if (maximized) classes.push('dk-win--max');
-  if (minimized) classes.push('dk-win--min');
 
   return (
     <section
@@ -67,7 +64,6 @@ export function Window({
       }}
       role="dialog"
       aria-labelledby={`dk-win-${id}`}
-      aria-hidden={minimized || undefined}
       tabIndex={-1}
       onPointerDown={() => onFocus(id)}
       onKeyDown={(e) => {
@@ -86,9 +82,6 @@ export function Window({
           {title}
         </h2>
         <div className="dk-win__controls">
-          <button type="button" onClick={() => onMinimize(id)} aria-label={t('desktop.minimize')} title={t('desktop.minimize')}>
-            <span className="dk-glyph dk-glyph--min" aria-hidden="true" />
-          </button>
           <button
             type="button"
             className="dk-win__max"

@@ -124,10 +124,8 @@ export const translations = {
       open: 'Open',
       skip: 'Skip intro',
       about: 'About',
-      minimize: 'Minimise',
       maximize: 'Maximise',
       restore: 'Restore',
-      openWindows: 'Open windows',
       loading: 'Loading',
       replay: 'Replay intro',
       files: { projects: 'work/', about: 'about.txt', contact: 'contact.vcf' },
@@ -143,7 +141,9 @@ export const translations = {
       fullPage: 'Full project page →',
       showPanel: 'Show details',
       hidePanel: 'Hide details',
-      openProject: 'Select a project to see its details.',
+      openFile: 'Open project',
+      prev: 'Previous project',
+      next: 'Next project',
     },
 
     // Not found
@@ -269,10 +269,8 @@ export const translations = {
       open: 'Abrir',
       skip: 'Saltar intro',
       about: 'Sobre',
-      minimize: 'Minimizar',
       maximize: 'Maximizar',
       restore: 'Restaurar',
-      openWindows: 'Janelas abertas',
       loading: 'A carregar',
       replay: 'Repetir intro',
       files: { projects: 'trabalho/', about: 'sobre.txt', contact: 'contacto.vcf' },
@@ -288,7 +286,9 @@ export const translations = {
       fullPage: 'Página completa do projeto →',
       showPanel: 'Mostrar detalhes',
       hidePanel: 'Esconder detalhes',
-      openProject: 'Seleciona um projeto para ver os detalhes.',
+      openFile: 'Abrir projeto',
+      prev: 'Projeto anterior',
+      next: 'Projeto seguinte',
     },
 
     notFound: {
