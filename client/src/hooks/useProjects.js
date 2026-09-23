@@ -11,7 +11,8 @@ export function useProjects({ featured = false } = {}) {
     let alive = true;
     api
       .get('/projects', { params: featured ? { featured: 'true' } : undefined })
-      .then((res) => alive && setProjects(res.data))
+      // Sem API (ex.: só o Vite a correr) a resposta pode ser o index.html — só aceitamos listas.
+      .then((res) => alive && setProjects(Array.isArray(res.data) ? res.data : []))
       .catch(() => {})
       .finally(() => alive && setLoading(false));
     return () => {
