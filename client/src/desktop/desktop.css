@@ -417,8 +417,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 7px 6px;
-  /* riscas só na área do conteúdo; a cor de papel cobre a barra toda */
-  background: repeating-linear-gradient(var(--dk-ink) 0 1px, transparent 1px 4px) content-box, var(--dk-paper);
+  background: var(--dk-paper);
   border-bottom: 1px solid var(--dk-ink);
   color: var(--dk-ink);
   cursor: grab;
@@ -426,7 +425,7 @@
   flex: none;
 }
 
-/* janela inativa: barra sem riscas, como num sistema a sério */
+/* janela inativa: barra mais apagada */
 .dk-win:not(.dk-win--active) .dk-win__bar {
   background: var(--dk-paper-dim);
 }
