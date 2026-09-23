@@ -22,6 +22,7 @@
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
+  overflow-x: clip; /* nada passa da largura do ecrã */
 }
 
 .site ::selection {
@@ -151,6 +152,8 @@
 /* ─── Grelha de projetos: folha de contactos ─── */
 
 .site .grid-3 {
+  /* em ecrãs estreitos a coluna encolhe em vez de sair do ecrã */
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: 1px;
   background: var(--border-strong);
   border: 1px solid var(--border-strong);

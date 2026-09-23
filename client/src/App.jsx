@@ -5,6 +5,7 @@ import Footer from './components/Footer.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Home from './pages/Home.jsx';
 import DesktopExperience from './desktop/DesktopExperience.jsx';
+import { useMediaQuery } from './hooks/useMediaQuery.js';
 import Work from './pages/Work.jsx';
 import ProjectDetail from './pages/ProjectDetail.jsx';
 import Contact from './pages/Contact.jsx';
@@ -15,8 +16,10 @@ import NotFound from './pages/NotFound.jsx';
 export default function App() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin') || location.pathname === '/login';
-  // A página inicial (portátil → desktop) ocupa o ecrã inteiro, sem navbar nem footer.
-  const isDesktop = location.pathname === '/';
+  // Em ecrã grande, a página inicial é o portátil → desktop (ecrã inteiro, sem navbar nem footer).
+  // No telemóvel mantém-se a home clássica.
+  const isSmallScreen = useMediaQuery('(max-width: 760px)');
+  const isDesktop = location.pathname === '/' && !isSmallScreen;
   const bare = isAdmin || isDesktop;
 
   return (
@@ -25,7 +28,7 @@ export default function App() {
       {!bare && <Navbar />}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<DesktopExperience />} />
+          <Route path="/" element={isSmallScreen ? <Home /> : <DesktopExperience />} />
           <Route path="/inicio" element={<Home />} />
           <Route path="/trabalho" element={<Work />} />
           <Route path="/projeto/:slug" element={<ProjectDetail />} />
