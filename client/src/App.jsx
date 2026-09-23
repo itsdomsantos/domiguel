@@ -17,14 +17,15 @@ export default function App() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin') || location.pathname === '/login';
   // Em ecrã grande, a página inicial é o portátil → desktop (ecrã inteiro, sem navbar nem footer).
-  // No telemóvel mantém-se a home clássica.
+  // No telemóvel mantém-se o site original, home incluída.
   const isSmallScreen = useMediaQuery('(max-width: 760px)');
   const isDesktop = location.pathname === '/' && !isSmallScreen;
   const bare = isAdmin || isDesktop;
 
   return (
-    // .site aplica o tema das páginas públicas (não se aplica à administração nem ao desktop)
-    <div className={bare ? undefined : 'site'}>
+    // .site aplica o tema novo às páginas públicas — só em ecrã grande.
+    // No telemóvel fica o site original, tal como estava (nem administração nem desktop usam o tema).
+    <div className={bare || isSmallScreen ? undefined : 'site'}>
       {!bare && <Navbar />}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
