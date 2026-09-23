@@ -367,7 +367,8 @@
   justify-content: space-between;
   gap: 10px;
   padding: 7px 6px;
-  background: var(--dk-paper) repeating-linear-gradient(var(--dk-ink) 0 1px, transparent 1px 4px) content-box;
+  /* riscas só na área do conteúdo; a cor de papel cobre a barra toda */
+  background: repeating-linear-gradient(var(--dk-ink) 0 1px, transparent 1px 4px) content-box, var(--dk-paper);
   border-bottom: 1px solid var(--dk-ink);
   color: var(--dk-ink);
   cursor: grab;
