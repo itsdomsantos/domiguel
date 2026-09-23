@@ -57,7 +57,6 @@
   transition: color 0.2s ease;
 }
 .footer__col a:hover { color: var(--brand-2); }
-.footer__admin { color: var(--text-dim) !important; }
 
 .footer__bottom {
   display: flex;

@@ -27,9 +27,7 @@ export default function Footer() {
             <h4>Contacto</h4>
             <a href="mailto:domdotdevelopments@gmail.com">domdotdevelopments@gmail.com</a>
             <Link to="/contacto">Pedir orçamento</Link>
-            <Link to="/login" className="footer__admin">
-              {t('footer.admin')}
-            </Link>
+            
           </div>
         </div>
       </div>
