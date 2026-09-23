@@ -165,7 +165,8 @@ export default function ContextPanel({
               </>
             )}
 
-            {projects.length > 0 && (
+            {/* só vale a pena listar se houver mais do que o que já está na montra */}
+            {projects.length > showcase.length && (
               <>
                 <h3 className="dk-panel__sub">{t('work.title')}</h3>
                 <ul className="dk-thumbs">
