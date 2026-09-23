@@ -255,15 +255,13 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* superfície com grelha de pontos */
+/* superfície */
 
 .dk-surface {
   grid-area: surface;
   position: relative;
   overflow: hidden;
-  background-color: var(--dk-ink);
-  background-image: radial-gradient(circle, rgba(236, 229, 211, 0.12) 1px, transparent 1.5px);
-  background-size: 22px 22px;
+  background: var(--dk-ink);
 }
 
 .dk-surface::after {

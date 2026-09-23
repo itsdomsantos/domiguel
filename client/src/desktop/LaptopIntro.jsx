@@ -29,10 +29,6 @@ const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 function drawScreen(ctx, w, h) {
   ctx.fillStyle = INK;
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = 'rgba(236, 229, 211, 0.13)';
-  for (let y = 44; y < h; y += 22) {
-    for (let x = 12; x < w; x += 22) ctx.fillRect(x, y, 2, 2);
-  }
   ctx.fillStyle = INK;
   ctx.fillRect(0, 0, w, 30);
   ctx.fillStyle = 'rgba(236, 229, 211, 0.18)';

@@ -20,7 +20,8 @@ export default function App() {
   const bare = isAdmin || isDesktop;
 
   return (
-    <>
+    // .site aplica o tema das páginas públicas (não se aplica à administração nem ao desktop)
+    <div className={bare ? undefined : 'site'}>
       {!bare && <Navbar />}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
@@ -42,6 +43,6 @@ export default function App() {
         </Routes>
       </AnimatePresence>
       {!bare && <Footer />}
-    </>
+    </div>
   );
 }
