@@ -1,8 +1,8 @@
 // Ícones desenhados à mão para cada ficheiro do desktop — cada um diz o que abre.
 
-export function DrawerIcon() {
+export function DrawerIcon({ className = 'dk-icon__svg' }) {
   return (
-    <svg viewBox="0 0 64 56" aria-hidden="true" className="dk-icon__svg">
+    <svg viewBox="0 0 64 56" aria-hidden="true" className={className}>
       <path d="M5 10h17l3-5h11l3 5h20v36H5z" fill="var(--dk-paper-dim)" />
       <rect x="10" y="14" width="44" height="10" fill="var(--dk-ink)" stroke="var(--dk-paper)" strokeWidth="1.5" />
       <rect x="14" y="18" width="16" height="2" fill="var(--dk-accent)" />
@@ -13,9 +13,9 @@ export function DrawerIcon() {
   );
 }
 
-export function SheetIcon() {
+export function SheetIcon({ className = 'dk-icon__svg' }) {
   return (
-    <svg viewBox="0 0 64 56" aria-hidden="true" className="dk-icon__svg">
+    <svg viewBox="0 0 64 56" aria-hidden="true" className={className}>
       <path d="M13 2h27l12 12v41H13z" fill="var(--dk-paper)" />
       <path d="M40 2v12h12z" fill="var(--dk-paper-dim)" />
       <rect x="19" y="18" width="18" height="3" fill="var(--dk-ink)" />
@@ -28,9 +28,9 @@ export function SheetIcon() {
   );
 }
 
-export function PostcardIcon() {
+export function PostcardIcon({ className = 'dk-icon__svg' }) {
   return (
-    <svg viewBox="0 0 64 56" aria-hidden="true" className="dk-icon__svg">
+    <svg viewBox="0 0 64 56" aria-hidden="true" className={className}>
       <rect x="3" y="9" width="58" height="39" fill="var(--dk-paper)" />
       <rect
         x="45"

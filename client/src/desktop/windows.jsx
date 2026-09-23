@@ -4,49 +4,110 @@ import { useContactForm, CONTACT_EMAIL, LINKEDIN_URL } from '../hooks/useContact
 
 export const projectYear = (p) => (p.created_at ? new Date(p.created_at).getFullYear() : '');
 
-// Moldura de janela: barra de título arrastável (só com rato), foco ao abrir, Esc fecha.
-export function Window({ id, title, variant, z, pos, onMove, onFocus, onClose, children }) {
+const isSmallScreen = () => window.matchMedia('(max-width: 760px)').matches;
+
+// Segue o rato até largar o botão.
+function track(onMove) {
+  const move = (ev) => onMove(ev);
+  const up = () => {
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', up);
+  };
+  window.addEventListener('pointermove', move);
+  window.addEventListener('pointerup', up);
+}
+
+// Moldura de janela: arrastar pela barra, duplo clique para maximizar,
+// minimizar/maximizar/fechar. Esc fecha.
+export function Window({
+  id,
+  title,
+  Icon,
+  variant,
+  z,
+  pos,
+  active,
+  maximized,
+  minimized,
+  onMove,
+  onFocus,
+  onClose,
+  onMinimize,
+  onToggleMax,
+  children,
+}) {
   const ref = useRef(null);
   const { t } = useLang();
 
   useEffect(() => {
-    ref.current?.focus();
-  }, []);
+    if (!minimized) ref.current?.focus();
+  }, [minimized]);
 
   function startDrag(e) {
     if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('button')) return;
-    if (window.matchMedia('(max-width: 760px)').matches) return;
-    const startX = e.clientX - pos.x;
-    const startY = e.clientY - pos.y;
-    const move = (ev) => onMove(id, { x: ev.clientX - startX, y: Math.max(0, ev.clientY - startY) });
-    const up = () => {
-      window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', up);
-    };
-    window.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', up);
+    if (maximized || isSmallScreen()) return;
+    const dx = e.clientX - pos.x;
+    const dy = e.clientY - pos.y;
+    track((ev) => onMove(id, { x: ev.clientX - dx, y: Math.max(0, ev.clientY - dy) }));
   }
+
+  const classes = ['dk-win', `dk-win--${variant}`];
+  if (active) classes.push('dk-win--active');
+  if (maximized) classes.push('dk-win--max');
+  if (minimized) classes.push('dk-win--min');
 
   return (
     <section
       ref={ref}
-      className={`dk-win dk-win--${variant}`}
-      style={{ zIndex: z, '--x': `${pos.x}px`, '--y': `${pos.y}px` }}
+      className={classes.join(' ')}
+      style={{
+        zIndex: z,
+        '--x': `${pos.x}px`,
+        '--y': `${pos.y}px`,
+      }}
       role="dialog"
       aria-labelledby={`dk-win-${id}`}
+      aria-hidden={minimized || undefined}
       tabIndex={-1}
       onPointerDown={() => onFocus(id)}
       onKeyDown={(e) => {
         if (e.key === 'Escape') onClose(id);
       }}
     >
-      <header className="dk-win__bar" onPointerDown={startDrag}>
+      <header
+        className="dk-win__bar"
+        onPointerDown={startDrag}
+        onDoubleClick={(e) => {
+          if (!e.target.closest('button')) onToggleMax(id);
+        }}
+      >
+        <Icon className="dk-win__icon" />
         <h2 id={`dk-win-${id}`} className="dk-win__title">
           {title}
         </h2>
-        <button type="button" className="dk-win__close" onClick={() => onClose(id)} aria-label={t('desktop.close')}>
-          ×
-        </button>
+        <div className="dk-win__controls">
+          <button type="button" onClick={() => onMinimize(id)} aria-label={t('desktop.minimize')} title={t('desktop.minimize')}>
+            <span className="dk-glyph dk-glyph--min" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className="dk-win__max"
+            onClick={() => onToggleMax(id)}
+            aria-label={maximized ? t('desktop.restore') : t('desktop.maximize')}
+            title={maximized ? t('desktop.restore') : t('desktop.maximize')}
+          >
+            <span className={`dk-glyph ${maximized ? 'dk-glyph--restore' : 'dk-glyph--max'}`} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className="dk-win__close"
+            onClick={() => onClose(id)}
+            aria-label={t('desktop.close')}
+            title={t('desktop.close')}
+          >
+            ×
+          </button>
+        </div>
       </header>
       <div className="dk-win__body">{children}</div>
     </section>
