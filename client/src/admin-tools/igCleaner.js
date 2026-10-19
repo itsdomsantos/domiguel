@@ -60,16 +60,41 @@
     return isUnf ? !!d.following : !!d.followed_by;
   }
 
+  // Cada passo fica registado para o erro dizer exatamente onde falhou.
   async function act(isUnf, id) {
-    const body = `user_id=${id}&container_module=profile`;
-    await ig(isUnf ? `friendships/destroy/${id}/` : `friendships/remove_follower/${id}/`, 'POST', body);
+    const log = [];
+    const step = async (name, fn) => {
+      try {
+        const v = await fn();
+        log.push(`${name}: ${v === undefined ? 'ok' : v}`);
+        return v;
+      } catch (e) {
+        log.push(`${name}: ${e.message}`);
+        e.message = log.join(' · ');
+        throw e;
+      }
+    };
+    const check = () =>
+      step('verificação', async () => ((await stillLinked(isUnf, id)) ? 'ainda ligado' : 'feito'));
+
+    await step('api', () =>
+      ig(
+        isUnf ? `friendships/destroy/${id}/` : `friendships/remove_follower/${id}/`,
+        'POST',
+        `user_id=${id}&container_module=profile`,
+      ).then(() => undefined),
+    );
     await sleep(rand(1500, 3000));
-    if (!(await stillLinked(isUnf, id))) return;
+    if ((await check()) === 'feito') return;
     // Alternativa: endpoints antigos do site
-    await ig(isUnf ? `/web/friendships/${id}/unfollow/` : `/web/friendships/${id}/remove_follower/`, 'POST');
+    await step('web', () =>
+      ig(isUnf ? `/web/friendships/${id}/unfollow/` : `/web/friendships/${id}/remove_follower/`, 'POST').then(
+        () => undefined,
+      ),
+    );
     await sleep(rand(1500, 3000));
-    if (!(await stillLinked(isUnf, id))) return;
-    const err = new Error('o Instagram respondeu ok mas não aplicou a ação (bloqueio silencioso)');
+    if ((await check()) === 'feito') return;
+    const err = new Error(log.join(' · ') + ' — o Instagram aceitou mas não aplicou (bloqueio silencioso)');
     err.blocked = true;
     throw err;
   }
@@ -403,14 +428,14 @@
           r.status.style.color = C.danger;
           r.status.title = e.message;
         }
-        if (e.blocked || e.status === 400 || e.status === 403) {
-          setStatus(
-            `Instagram travou as ações (${e.message}). Parei por segurança — espera algumas horas antes de continuar.`,
-            C.danger,
-          );
-          state.stop = true;
-          break;
-        }
+        console.error('[IG Cleaner]', u.username, e);
+        // Qualquer falha para tudo: continuar às cegas só piora bloqueios.
+        setStatus(
+          `Falhou em @${u.username}: ${e.message}. Parei por segurança${e.blocked ? ' — espera algumas horas antes de continuar' : ''}.`,
+          C.danger,
+        );
+        state.stop = true;
+        break;
       }
       updateCounter();
       if (i < ids.length - 1 && !state.stop) {
@@ -421,7 +446,7 @@
 
     state.running = false;
     stopBtn.style.display = 'none';
-    if (!statusEl.textContent.startsWith('Instagram travou')) {
+    if (!statusEl.textContent.startsWith('Falhou em')) {
       setStatus(`Concluído: ${done} de ${ids.length}.`, C.success);
     }
     paintTabs();
