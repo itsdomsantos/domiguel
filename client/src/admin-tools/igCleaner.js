@@ -24,18 +24,20 @@
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const rand = (a, b) => a + Math.random() * (b - a);
 
-  async function ig(path, method = 'GET') {
-    const res = await fetch('/api/v1/' + path, {
+  // path relativo a /api/v1/, ou absoluto (começa por "/") para os endpoints /web/.
+  async function ig(path, method = 'GET', body = '') {
+    const res = await fetch(path.startsWith('/') ? path : '/api/v1/' + path, {
       method,
       credentials: 'include',
       headers: {
         'X-IG-App-ID': APP_ID,
+        'X-ASBD-ID': '129477',
         'X-CSRFToken': cookie('csrftoken'),
         'X-Requested-With': 'XMLHttpRequest',
         'X-IG-WWW-Claim': sessionStorage.getItem('www-claim-v2') || '0',
         ...(method === 'POST' ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}),
       },
-      body: method === 'POST' ? '' : undefined,
+      body: method === 'POST' ? body : undefined,
     });
     let data = null;
     try {
@@ -50,6 +52,26 @@
       throw err;
     }
     return data;
+  }
+
+  // O Instagram às vezes responde "ok" sem fazer nada — confirmamos sempre.
+  async function stillLinked(isUnf, id) {
+    const d = await ig(`friendships/show/${id}/`);
+    return isUnf ? !!d.following : !!d.followed_by;
+  }
+
+  async function act(isUnf, id) {
+    const body = `user_id=${id}&container_module=profile`;
+    await ig(isUnf ? `friendships/destroy/${id}/` : `friendships/remove_follower/${id}/`, 'POST', body);
+    await sleep(rand(1500, 3000));
+    if (!(await stillLinked(isUnf, id))) return;
+    // Alternativa: endpoints antigos do site
+    await ig(isUnf ? `/web/friendships/${id}/unfollow/` : `/web/friendships/${id}/remove_follower/`, 'POST');
+    await sleep(rand(1500, 3000));
+    if (!(await stillLinked(isUnf, id))) return;
+    const err = new Error('o Instagram respondeu ok mas não aplicou a ação (bloqueio silencioso)');
+    err.blocked = true;
+    throw err;
   }
 
   async function fetchAll(kind, onProgress) {
@@ -364,7 +386,7 @@
       }
       setStatus(`${i + 1}/${ids.length} — @${u.username}`);
       try {
-        await ig(isUnf ? `friendships/destroy/${id}/` : `friendships/remove_follower/${id}/`, 'POST');
+        await act(isUnf, id);
         done++;
         pool.delete(id);
         state.selected.delete(id);
