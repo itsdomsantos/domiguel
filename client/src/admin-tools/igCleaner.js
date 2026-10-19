@@ -60,43 +60,107 @@
     return isUnf ? !!d.following : !!d.followed_by;
   }
 
-  // Cada passo fica registado para o erro dizer exatamente onde falhou.
-  async function act(isUnf, id) {
-    const log = [];
-    const step = async (name, fn) => {
-      try {
-        const v = await fn();
-        log.push(`${name}: ${v === undefined ? 'ok' : v}`);
-        return v;
-      } catch (e) {
-        log.push(`${name}: ${e.message}`);
-        e.message = log.join(' · ');
-        throw e;
-      }
-    };
-    const check = () =>
-      step('verificação', async () => ((await stillLinked(isUnf, id)) ? 'ainda ligado' : 'feito'));
+  // ---------- Ações por cliques reais ----------
+  // O endpoint da API responde "ok" mas já não aplica o unfollow, por isso a ação
+  // é feita na própria interface do Instagram, numa janela auxiliar (mesma origem).
+  const FOLLOWING_RE = /^(following|a seguir|seguindo|siguiendo|suivi\(e\)|abonniert)$/i;
+  const UNFOLLOW_RE = /^(unfollow|deixar de seguir|dejar de seguir|ne plus suivre|nicht mehr folgen)$/i;
+  const REMOVE_RE = /^(remove|remover|eliminar|supprimer|entfernen)$/i;
+  let worker = null;
+  let myUsername = '';
 
-    await step('api', () =>
-      ig(
-        isUnf ? `friendships/destroy/${id}/` : `friendships/remove_follower/${id}/`,
-        'POST',
-        `user_id=${id}&container_module=profile`,
-      ).then(() => undefined),
-    );
+  // Texto visível de um elemento, ignorando os <title> dos ícones SVG.
+  function txt(node) {
+    let out = '';
+    for (const c of node.childNodes) {
+      if (c.nodeType === 3) out += c.nodeValue;
+      else if (c.nodeType === 1 && c.tagName.toLowerCase() !== 'svg') out += txt(c);
+    }
+    return out.replace(/\s+/g, ' ').trim();
+  }
+  const clickables = (root) => [...root.querySelectorAll('button, [role="button"]')];
+  const findBtn = (root, re) => clickables(root).find((b) => re.test(txt(b)));
+
+  async function waitFor(fn, what, timeout = 20000) {
+    const end = Date.now() + timeout;
+    while (Date.now() < end) {
+      if (state.stop) throw new Error('parado');
+      if (!worker || worker.closed) throw new Error('a janela auxiliar foi fechada');
+      try {
+        const v = fn();
+        if (v) return v;
+      } catch {
+        /* a janela ainda está a navegar */
+      }
+      await sleep(400);
+    }
+    throw new Error(`não encontrei ${what}`);
+  }
+
+  async function goto(path) {
+    worker.__igcOld = true;
+    worker.location.href = location.origin + path;
+    await waitFor(() => !worker.__igcOld && worker.document.readyState === 'complete', 'a página');
+  }
+
+  async function uiUnfollow(username) {
+    await goto(`/${username}/`);
+    const btn = await waitFor(() => findBtn(worker.document, FOLLOWING_RE), 'o botão "A seguir"');
+    btn.click();
+    const confirmBtn = await waitFor(() => {
+      for (const d of worker.document.querySelectorAll('[role="dialog"]')) {
+        const b = findBtn(d, UNFOLLOW_RE);
+        if (b) return b;
+      }
+    }, 'o botão "Deixar de seguir"');
+    confirmBtn.click();
+    await waitFor(() => !findBtn(worker.document, FOLLOWING_RE), 'a confirmação do unfollow', 10000);
+  }
+
+  function typeInto(input, value) {
+    const setter = Object.getOwnPropertyDescriptor(worker.HTMLInputElement.prototype, 'value').set;
+    setter.call(input, value);
+    input.dispatchEvent(new worker.Event('input', { bubbles: true }));
+  }
+
+  async function uiRemove(username) {
+    if (!myUsername) {
+      const d = await ig('accounts/current_user/?edit=true');
+      myUsername = d?.user?.username;
+      if (!myUsername) throw new Error('não consegui saber o teu username');
+    }
+    await goto(`/${myUsername}/followers/`);
+    const dialog = await waitFor(() => worker.document.querySelector('[role="dialog"]'), 'a lista de seguidores');
+    const input = await waitFor(() => dialog.querySelector('input'), 'a pesquisa de seguidores');
+    typeInto(input, username);
+    const removeBtn = await waitFor(() => {
+      const link = [...dialog.querySelectorAll(`a[href="/${username}/"]`)].pop();
+      // sobe até à linha que tem o botão "Remover"
+      for (let n = link?.parentElement; n && n !== dialog; n = n.parentElement) {
+        const b = findBtn(n, REMOVE_RE);
+        if (b) return b;
+      }
+    }, `@${username} na lista de seguidores`);
+    removeBtn.click();
+    const confirmBtn = await waitFor(() => {
+      const dialogs = [...worker.document.querySelectorAll('[role="dialog"]')].filter((d) => d !== dialog && !dialog.contains(d));
+      for (const d of dialogs.reverse()) {
+        const b = findBtn(d, REMOVE_RE);
+        if (b) return b;
+      }
+    }, 'a confirmação "Remover"');
+    confirmBtn.click();
+    await sleep(2000);
+  }
+
+  async function act(isUnf, id, username) {
+    await (isUnf ? uiUnfollow(username) : uiRemove(username));
     await sleep(rand(1500, 3000));
-    if ((await check()) === 'feito') return;
-    // Alternativa: endpoints antigos do site
-    await step('web', () =>
-      ig(isUnf ? `/web/friendships/${id}/unfollow/` : `/web/friendships/${id}/remove_follower/`, 'POST').then(
-        () => undefined,
-      ),
-    );
-    await sleep(rand(1500, 3000));
-    if ((await check()) === 'feito') return;
-    const err = new Error(log.join(' · ') + ' — o Instagram aceitou mas não aplicou (bloqueio silencioso)');
-    err.blocked = true;
-    throw err;
+    if (await stillLinked(isUnf, id)) {
+      const err = new Error('cliquei mas o Instagram não aplicou a ação (bloqueio temporário?)');
+      err.blocked = true;
+      throw err;
+    }
   }
 
   async function fetchAll(kind, onProgress) {
@@ -391,7 +455,16 @@
     const verb = isUnf ? 'deixar de seguir' : 'remover como seguidor';
     let msg = `Vais ${verb} ${ids.length} conta(s). Continuar?`;
     if (ids.length > 150) msg += '\n\nAviso: mais de ~150 por dia aumenta o risco de bloqueio temporário do Instagram.';
-    if (!confirm(msg)) return;
+    // A janela auxiliar tem de abrir já, ainda dentro do clique (senão o browser bloqueia o pop-up).
+    worker = window.open('about:blank', 'igc-worker', 'width=480,height=760');
+    if (!worker) {
+      setStatus('O browser bloqueou a janela auxiliar. Permite pop-ups no instagram.com e tenta outra vez.', C.danger);
+      return;
+    }
+    if (!confirm(msg + '\n\nVai abrir uma janela do Instagram onde os cliques são feitos — não a feches.')) {
+      worker.close();
+      return;
+    }
 
     const min = Math.max(5, Number(delayMin.value) || 25);
     const max = Math.max(min, Number(delayMax.value) || 45);
@@ -411,7 +484,7 @@
       }
       setStatus(`${i + 1}/${ids.length} — @${u.username}`);
       try {
-        await act(isUnf, id);
+        await act(isUnf, id, u.username);
         done++;
         pool.delete(id);
         state.selected.delete(id);
@@ -446,6 +519,7 @@
 
     state.running = false;
     stopBtn.style.display = 'none';
+    worker?.close();
     if (!statusEl.textContent.startsWith('Falhou em')) {
       setStatus(`Concluído: ${done} de ${ids.length}.`, C.success);
     }
