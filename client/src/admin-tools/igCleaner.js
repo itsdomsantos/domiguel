@@ -226,10 +226,33 @@
     selected: new Set(),
     view: 'following',
     onlyNonMutual: true,
+    hideKept: true,
     search: '',
     running: false,
     stop: false,
   };
+
+  // Protegidos: pessoas a nunca deixar de seguir / remover. Ficam guardados neste
+  // browser (localStorage do instagram.com) entre utilizações. id -> username
+  const KEEP_KEY = 'igc-keep';
+  let keep = {};
+  try {
+    keep = JSON.parse(localStorage.getItem(KEEP_KEY) || '{}') || {};
+  } catch {
+    /* sem storage: protegidos só nesta sessão */
+  }
+  function toggleKeep(id, username) {
+    if (keep[id]) delete keep[id];
+    else {
+      keep[id] = username;
+      state.selected.delete(id);
+    }
+    try {
+      localStorage.setItem(KEEP_KEY, JSON.stringify(keep));
+    } catch {
+      /* idem */
+    }
+  }
 
   const statusEl = el('div', { color: C.soft, fontSize: '12px', minHeight: '18px' });
   const setStatus = (t, color = C.soft) => {
@@ -252,6 +275,7 @@
     tabFollowers.textContent = `Seguidores (${n2})`;
     Object.assign(tabFollowing.style, btnStyle(state.view === 'following' ? C.brand : C.surface2), { flex: '1' });
     Object.assign(tabFollowers.style, btnStyle(state.view === 'followers' ? C.brand : C.surface2), { flex: '1' });
+    keepLabel.lastChild.textContent = ` Esconder protegidos ★ (${Object.keys(keep).length})`;
     mutualLabel.lastChild.textContent =
       state.view === 'following' ? ' Só quem não me segue de volta' : ' Só quem eu não sigo de volta';
   }
@@ -277,6 +301,16 @@
   };
   const mutualLabel = el('label', { color: C.soft, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }, {}, [
     mutualBox,
+    document.createTextNode(''),
+  ]);
+
+  const keepBox = el('input', { accentColor: C.brand }, { type: 'checkbox', checked: true });
+  keepBox.onchange = () => {
+    state.hideKept = keepBox.checked;
+    renderList();
+  };
+  const keepLabel = el('label', { color: C.soft, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }, {}, [
+    keepBox,
     document.createTextNode(''),
   ]);
 
@@ -345,7 +379,7 @@
       statusEl,
       row(tabFollowing, tabFollowers),
       row(search),
-      row(mutualLabel),
+      row(mutualLabel, keepLabel),
       row(selAllBtn, selNoneBtn, counter),
       list,
       row(
@@ -366,6 +400,7 @@
     const out = [];
     for (const [id, u] of src) {
       if (state.onlyNonMutual && other.has(id)) continue;
+      if (state.hideKept && keep[id]) continue;
       if (state.search && !`${u.username} ${u.full_name || ''}`.toLowerCase().includes(state.search)) continue;
       out.push([id, u]);
     }
@@ -374,8 +409,8 @@
 
   function updateCounter() {
     const s = [...state.selected];
-    const nUnf = s.filter((id) => state.following.has(id)).length;
-    const nRem = s.filter((id) => state.followers.has(id)).length;
+    const nUnf = s.filter((id) => state.following.has(id) && !keep[id]).length;
+    const nRem = s.filter((id) => state.followers.has(id) && !keep[id]).length;
     counter.textContent = `${s.length} selecionados`;
     unfollowBtn.textContent = `Deixar de seguir (${nUnf})`;
     removeBtn.textContent = `Remover seguidor (${nRem})`;
@@ -398,6 +433,7 @@
         type: 'checkbox',
         checked: state.selected.has(id),
       });
+      check.disabled = !!keep[id];
       check.onchange = () => {
         check.checked ? state.selected.add(id) : state.selected.delete(id);
         updateCounter();
@@ -420,6 +456,16 @@
         textContent: state.view === 'following' ? (followsMe ? 'segue-te' : 'não te segue') : iFollow ? 'segues' : 'não segues',
       });
       const status = el('span', { fontSize: '12px', flexShrink: '0' });
+      const star = el('button', { ...btnStyle('transparent', keep[id] ? '#fbbf24' : C.dim), padding: '4px 8px', fontSize: '18px', border: 'none' }, {
+        textContent: keep[id] ? '★' : '☆',
+        title: keep[id] ? 'Protegido — clica para tirar' : 'Proteger (nunca deixar de seguir / remover)',
+      });
+      star.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleKeep(id, u.username);
+        renderList();
+      };
       const r = el(
         'label',
         { display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 4px', borderBottom: `1px solid ${C.border}`, cursor: 'pointer' },
@@ -435,6 +481,7 @@
             tag,
           ]),
           status,
+          star,
         ],
       );
       list.append(r);
@@ -444,7 +491,7 @@
   }
 
   selAllBtn.onclick = () => {
-    for (const [id] of visibleUsers()) state.selected.add(id);
+    for (const [id] of visibleUsers()) if (!keep[id]) state.selected.add(id);
     renderList();
   };
   selNoneBtn.onclick = () => {
@@ -465,7 +512,7 @@
   function askRun(action) {
     const isUnf = action === 'unfollow';
     const pool = isUnf ? state.following : state.followers;
-    const ids = [...state.selected].filter((id) => pool.has(id));
+    const ids = [...state.selected].filter((id) => pool.has(id) && !keep[id]);
     if (!ids.length) return;
     const verb = isUnf ? 'Deixar de seguir' : 'Remover como seguidor';
     confirmText.textContent =
