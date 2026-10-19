@@ -32,6 +32,7 @@
         'X-IG-App-ID': APP_ID,
         'X-CSRFToken': cookie('csrftoken'),
         'X-Requested-With': 'XMLHttpRequest',
+        'X-IG-WWW-Claim': sessionStorage.getItem('www-claim-v2') || '0',
         ...(method === 'POST' ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}),
       },
       body: method === 'POST' ? '' : undefined,
@@ -43,7 +44,7 @@
       /* resposta sem JSON */
     }
     if (!res.ok || data?.status === 'fail') {
-      const err = new Error(data?.feedback_message || data?.message || 'HTTP ' + res.status);
+      const err = new Error(`HTTP ${res.status}${data?.feedback_message || data?.message ? ' — ' + (data.feedback_message || data.message) : ''}`);
       err.status = res.status;
       err.blocked = res.status === 429 || !!data?.feedback_required || data?.message === 'feedback_required';
       throw err;
@@ -183,7 +184,7 @@
     setStatus('A parar depois da ação atual…');
   };
 
-  const list = el('div', { flex: '1', overflowY: 'auto', borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` });
+  const list = el('div', { flex: '1', minHeight: '0', overflowY: 'auto', borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` });
   const rows = new Map(); // id -> { row, check, status }
 
   const row = (...children) => el('div', { display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }, {}, children);
@@ -195,7 +196,7 @@
       top: '0',
       right: '0',
       width: 'min(560px, 100vw)',
-      height: '100vh',
+      bottom: '0',
       zIndex: '2147483647',
       background: C.bg,
       color: C.text,
@@ -218,6 +219,7 @@
         el('span', { flex: '1' }),
         closeBtn,
       ),
+      statusEl,
       row(tabFollowing, tabFollowers),
       row(search),
       row(mutualLabel),
@@ -230,7 +232,6 @@
         delayMax,
       ),
       row(unfollowBtn, removeBtn, stopBtn),
-      statusEl,
     ],
   );
   document.body.append(panel);
@@ -416,7 +417,11 @@
       paintTabs();
       setStatus('A carregar os teus seguidores…');
       state.followers = await fetchAll('followers', (n) => setStatus(`A carregar os teus seguidores… ${n}`));
-      setStatus(`Pronto. ${state.following.size} a seguir · ${state.followers.size} seguidores.`, C.success);
+      if (!state.following.size && !state.followers.size) {
+        setStatus('O Instagram devolveu listas vazias. Recarrega a página (F5) e tenta de novo.', C.danger);
+      } else {
+        setStatus(`Pronto. ${state.following.size} a seguir · ${state.followers.size} seguidores.`, C.success);
+      }
     } catch (e) {
       setStatus(`Erro a carregar listas: ${e.message}`, C.danger);
     }
