@@ -234,3 +234,37 @@
   .admin__main { padding: 20px; }
   .editor__grid { grid-template-columns: 1fr; }
 }
+
+/* Instagram */
+.ig-tool {
+  display: grid;
+  gap: 18px;
+  max-width: 820px;
+}
+.ig-tool__card {
+  padding: 24px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.ig-tool__card--warn { border-left: 3px solid var(--brand-2); }
+.ig-tool__card h3 { font-size: 1.1rem; margin-bottom: 10px; }
+.ig-tool__card p { color: var(--text-soft); font-size: 0.93rem; }
+.ig-tool__steps {
+  color: var(--text-soft);
+  font-size: 0.93rem;
+  padding-left: 20px;
+  margin: 14px 0;
+  display: grid;
+  gap: 6px;
+}
+.ig-tool__steps strong { color: var(--text); }
+.ig-tool__actions { display: flex; gap: 12px; flex-wrap: wrap; margin: 18px 0 14px; }
+.ig-tool__actions .btn-primary { cursor: grab; }
+.ig-tool__hint { font-size: 0.85rem !important; color: var(--text-dim) !important; }
+.ig-tool__hint code {
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 6px;
+  color: var(--text-soft);
+}

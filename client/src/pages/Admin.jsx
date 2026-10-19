@@ -2,12 +2,14 @@ import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import api from '../api.js';
 import ProjectEditor from '../components/admin/ProjectEditor.jsx';
+import InstagramPanel from '../components/admin/InstagramPanel.jsx';
 import './admin.css';
 
 const tabs = [
   { id: 'dashboard', label: 'Dashboard', icon: '◇' },
   { id: 'projects', label: 'Projetos', icon: '▦' },
   { id: 'messages', label: 'Mensagens', icon: '✉' },
+  { id: 'instagram', label: 'Instagram', icon: '◎' },
 ];
 
 export default function Admin() {
@@ -130,6 +132,8 @@ export default function Admin() {
             onEdit={(id) => setEditing(id)}
             onDelete={deleteProject}
           />
+        ) : tab === 'instagram' ? (
+          <InstagramPanel />
         ) : (
           <MessagesPanel messages={messages} onToggle={toggleRead} onDelete={deleteMessage} />
         )}
