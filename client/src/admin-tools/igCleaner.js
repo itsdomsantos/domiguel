@@ -289,6 +289,18 @@
 
   const unfollowBtn = el('button', { ...btnStyle(C.brand), flex: '1' }, { textContent: 'Deixar de seguir' });
   const removeBtn = el('button', { ...btnStyle(C.danger, '#08080f'), flex: '1' }, { textContent: 'Remover seguidor' });
+  const confirmText = el('span', { flex: '1 1 100%', fontSize: '13px', color: C.text });
+  const confirmYes = el('button', btnStyle(C.brand), { textContent: 'Confirmar' });
+  const confirmNo = el('button', btnStyle(C.surface2), { textContent: 'Cancelar' });
+  const confirmBox = el(
+    'div',
+    { display: 'none', flexWrap: 'wrap', gap: '8px', alignItems: 'center', padding: '10px', borderRadius: '10px', background: C.surface2, border: `1px solid ${C.brand}` },
+    {},
+    [confirmText, confirmYes, confirmNo],
+  );
+  confirmNo.onclick = () => {
+    confirmBox.style.display = 'none';
+  };
   const stopBtn = el('button', { ...btnStyle(C.surface2), display: 'none' }, { textContent: 'Parar' });
   stopBtn.onclick = () => {
     state.stop = true;
@@ -343,6 +355,7 @@
         delayMax,
       ),
       row(unfollowBtn, removeBtn, stopBtn),
+      confirmBox,
     ],
   );
   document.body.append(panel);
@@ -447,25 +460,30 @@
     }
   }
 
-  async function run(action) {
+  // Confirmação dentro do painel: um confirm() nativo é cancelado sozinho pelo
+  // Chrome quando a janela auxiliar fica à frente, e o pop-up tem de abrir no clique.
+  function askRun(action) {
     const isUnf = action === 'unfollow';
     const pool = isUnf ? state.following : state.followers;
     const ids = [...state.selected].filter((id) => pool.has(id));
     if (!ids.length) return;
-    const verb = isUnf ? 'deixar de seguir' : 'remover como seguidor';
-    let msg = `Vais ${verb} ${ids.length} conta(s). Continuar?`;
-    if (ids.length > 150) msg += '\n\nAviso: mais de ~150 por dia aumenta o risco de bloqueio temporário do Instagram.';
-    // A janela auxiliar tem de abrir já, ainda dentro do clique (senão o browser bloqueia o pop-up).
-    worker = window.open('about:blank', 'igc-worker', 'width=480,height=760');
-    if (!worker) {
-      setStatus('O browser bloqueou a janela auxiliar. Permite pop-ups no instagram.com e tenta outra vez.', C.danger);
-      return;
-    }
-    if (!confirm(msg + '\n\nVai abrir uma janela do Instagram onde os cliques são feitos — não a feches.')) {
-      worker.close();
-      return;
-    }
+    const verb = isUnf ? 'Deixar de seguir' : 'Remover como seguidor';
+    confirmText.textContent =
+      `${verb} ${ids.length} conta(s)? Vai abrir uma janela do Instagram onde os cliques são feitos — não a feches.` +
+      (ids.length > 150 ? ' Aviso: mais de ~150 por dia aumenta o risco de bloqueio.' : '');
+    confirmYes.onclick = () => {
+      confirmBox.style.display = 'none';
+      worker = window.open('about:blank', 'igc-worker', 'width=480,height=760');
+      if (!worker) {
+        setStatus('O browser bloqueou a janela auxiliar. Permite pop-ups no instagram.com e tenta outra vez.', C.danger);
+        return;
+      }
+      run(isUnf, pool, ids);
+    };
+    confirmBox.style.display = 'flex';
+  }
 
+  async function run(isUnf, pool, ids) {
     const min = Math.max(5, Number(delayMin.value) || 25);
     const max = Math.max(min, Number(delayMax.value) || 45);
     state.running = true;
@@ -526,8 +544,8 @@
     paintTabs();
     updateCounter();
   }
-  unfollowBtn.onclick = () => run('unfollow');
-  removeBtn.onclick = () => run('remove');
+  unfollowBtn.onclick = () => askRun('unfollow');
+  removeBtn.onclick = () => askRun('remove');
 
   (async () => {
     paintTabs();
